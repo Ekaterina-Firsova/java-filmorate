@@ -37,10 +37,10 @@ public class UserController {
    */
   @PostMapping
   public User save(@Valid @RequestBody final User user) {
-    log.info("Received request to add new film: {}", user);
-    final User savedUSer = saveUser(user);
-    log.info("Film added successfully: {}", savedUSer);
-    return savedUSer;
+    log.info("Received request to add new user: {}", user);
+    final User savedUser = saveUser(user);
+    log.info("User added successfully: {}", savedUser);
+    return savedUser;
   }
 
   /**
@@ -76,7 +76,7 @@ public class UserController {
    * @return the saved user
    */
   User saveUser(final User user) {
-    log.debug("Entering saveFilm method.");
+    log.debug("Entering saveUser method.");
     checkDataDuplication(user);
     user.setId(getNextId());
     if (user.getName() == null || user.getName().isBlank()) {
@@ -93,7 +93,7 @@ public class UserController {
    * @return the  user information after the update
    */
   User updateUser(final User user) {
-    log.debug("Entering updateFilm method.");
+    log.debug("Entering updateUser method.");
     final Long id = user.getId();
     if (id == null) {
       throw new IllegalArgumentException("User ID must be provided.");

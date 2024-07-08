@@ -22,12 +22,11 @@ import ru.yandex.practicum.filmorate.model.Film;
  */
 @Slf4j
 @RestController
-@RequestMapping(FilmController.FILM)
+@RequestMapping("/films")
 public class FilmController {
 
-  public static final String FILM = "/films";
-
   private final Map<Long, Film> films = new HashMap<>();
+  private Long idCount = 0L;
 
   /**
    * Handles POST requests to add a new film. Params:
@@ -128,12 +127,7 @@ public class FilmController {
    * @return the next available film ID
    */
   private long getNextId() {
-    long currentMaxId = films.keySet()
-        .stream()
-        .mapToLong(id -> id)
-        .max()
-        .orElse(0);
-    return ++currentMaxId;
+    return ++idCount;
   }
 
 }

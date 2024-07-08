@@ -22,12 +22,11 @@ import ru.yandex.practicum.filmorate.model.User;
  */
 @Slf4j
 @RestController
-@RequestMapping(UserController.USER)
+@RequestMapping("/users")
 public class UserController {
 
-  public static final String USER = "/users";
-
   private final Map<Long, User> users = new HashMap<>();
+  private long idCount = 0;
 
   /**
    * Handles POST requests to add a new user.
@@ -129,8 +128,7 @@ public class UserController {
    * @return the next available user ID
    */
   private long getNextId() {
-    long currentMaxId = users.keySet().stream().mapToLong(id -> id).max().orElse(0);
-    return ++currentMaxId;
+    return ++idCount;
   }
 
 }

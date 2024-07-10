@@ -3,18 +3,27 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 /**
  * Controller class for managing Users in the Filmorate application. All endpoints in this
@@ -23,10 +32,10 @@ import ru.yandex.practicum.filmorate.model.User;
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-  private final Map<Long, User> users = new HashMap<>();
-  private long idCount = 0;
+  private final UserService userService;
 
   /**
    * Handles POST requests to add a new user.
@@ -36,9 +45,9 @@ public class UserController {
    */
   @PostMapping
   public User save(@Valid @RequestBody final User user) {
-    log.info("Received request to add new user: {}", user);
-    final User savedUser = saveUser(user);
-    log.info("User added successfully: {}", savedUser);
+    log.info("Received request POST /users with body: {}", user);
+    final User savedUser = userService.save(user);
+    log.info("User successfully added: {}", savedUser);
     return savedUser;
   }
 
@@ -50,10 +59,24 @@ public class UserController {
    */
   @PutMapping
   public User update(@Valid @RequestBody final User newUser) {
-    log.info("Received request to update user: {}", newUser);
-    final User updatedUser = updateUser(newUser);
+    log.info("Received request PUT /users with body: {}", newUser);
+    final User updatedUser = userService.update(newUser);
     log.info("User updated successfully: {}", updatedUser);
     return updatedUser;
+  }
+
+  /**
+   * Handles PUT request to adds a friend to the user with the specified IDs.
+   * @param id The ID of the user who is adding a friend. Must not be null.
+   * @param friendId The ID of the friend to be added. Must not be null.
+   * @return The updated user with the added friend.
+   */
+  @PutMapping("/{id}/friends/{friendId}")
+  public User addFriend(@PathVariable("id") final Long id, @PathVariable("friendId") final Long friendId) {
+    log.info("Received request PUT users/{}/friends/{}",id, friendId);
+    final User user = userService.addFriend(id,friendId);
+    log.info("Adding friend to the user is successful: {}",user);
+    return user;
   }
 
   /**
@@ -63,72 +86,28 @@ public class UserController {
    */
   @GetMapping
   public Collection<User> getAll() {
-    return users.values();
-  }
-
-  /* UserService */
-
-  /**
-   * Saves a new user to the collection.
-   *
-   * @param user the user to be saved
-   * @return the saved user
-   */
-  User saveUser(final User user) {
-    log.debug("Entering saveUser method.");
-    checkDataDuplication(user);
-    user.setId(getNextId());
-    if (user.getName() == null || user.getName().isBlank()) {
-      user.setName(user.getLogin());
-    }
-    users.put(user.getId(), user);
-    return user;
+    return userService.getAll();
   }
 
   /**
-   * Updates an existing user in the collection.
+   * Handles GET requests to retrieve friends of a user by their ID.
    *
-   * @param user the user with updated information
-   * @return the  user information after the update
+   * @param id The ID of the user whose friends are to be retrieved. Must not be null.
+   * @return The list of friends of the user with the specified ID.
    */
-  User updateUser(final User user) {
-    log.debug("Entering updateUser method.");
-    final Long id = user.getId();
-    if (id == null) {
-      throw new IllegalArgumentException("User ID must be provided.");
-    }
-    final User oldUser = users.get(id);
-    log.debug("User before updating: {}", oldUser);
-    if (oldUser == null) {
-      throw new NotFoundException("User with ID " + id + " not found.");
-    }
-    checkDataDuplication(user);
-    users.put(id, user);
-    log.debug("User after updating: {}", user);
-    return user;
+  @GetMapping("/{id}/friends")
+  public List<User> getFriendsByUserId(@PathVariable final Long id) {
+    return userService.getUserFriends(id);
   }
 
-  /**
-   * Checks for data duplication in the collection of users.
-   *
-   * @param user the user to check for duplication
-   */
-  private void checkDataDuplication(final User user) {
-    Optional<User> duplicateUser = users.values().stream().filter(f -> f.equals(user)).findFirst();
-    boolean isDuplicate = duplicateUser.isPresent();
-    log.debug("Duplication of Data is found: {}", isDuplicate);
-    if (isDuplicate) {
-      throw new DuplicatedDataException("Action would result in duplication.");
-    }
+  @GetMapping("/{id}/friends/common/{otherId}")
+  public List<User> getMutualFriends(@PathVariable("id") final Long id, @PathVariable("otherId") final Long otherId) {
+    return userService.getMutualFriends(id,otherId);
   }
 
-  /**
-   * Generates the next available user ID.
-   *
-   * @return the next available user ID
-   */
-  private long getNextId() {
-    return ++idCount;
+  @DeleteMapping("/{id}/friends/{friendId}")
+  public User deleteFriend(@PathVariable("id") final Long id, @PathVariable("friendId") final Long friendId) {
+    return userService.removeFriend(id,friendId);
   }
 
 }

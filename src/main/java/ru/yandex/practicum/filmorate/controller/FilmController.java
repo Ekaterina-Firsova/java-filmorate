@@ -66,7 +66,7 @@ public class FilmController {
     return films.values();
   }
 
-  /*  FilmService.java */
+  /*  FilmStorage.java */
 
   /**
    * Saves a new film to the collection.

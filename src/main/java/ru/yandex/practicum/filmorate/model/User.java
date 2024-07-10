@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,5 +50,7 @@ public class User {
   @JsonFormat(pattern = "yyyy-MM-dd")
   @Past(message = "Birthday should be in the past.")
   private LocalDate birthday;
+
+  private final Set<Long> friends = new HashSet<>();
 
 }

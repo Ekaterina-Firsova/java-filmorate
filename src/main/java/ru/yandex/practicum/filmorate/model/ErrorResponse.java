@@ -1,10 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+public record ErrorResponse(String description) {
 
-@Getter
-@RequiredArgsConstructor
-public class ErrorResponse {
-private final String description;
 }

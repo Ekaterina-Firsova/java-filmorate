@@ -7,7 +7,6 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 @Component
@@ -15,21 +14,20 @@ import ru.yandex.practicum.filmorate.model.Film;
 public class InMemoryFilmStorage implements FilmStorage {
 
   private final Map<Long, Film> films = new HashMap<>();
-  private Long lastId = 0l;
+  private Long lastId = 0L;
 
 
   @Override
   public Film save(final Film film) {
-    log.debug("Entering saveFilm method.");
-    checkDataDuplication(film); //throws DuplicatedDataException if found
+    checkDataDuplication(film);
     film.setId(getNextId());
     films.put(film.getId(), film);
     return film;
   }
 
   @Override
-  public Optional<Film> findById(Long id) {
-    return Optional.empty();
+  public Optional<Film> findById(final Long id) {
+    return Optional.ofNullable(films.get(id));
   }
 
   @Override
@@ -39,42 +37,35 @@ public class InMemoryFilmStorage implements FilmStorage {
 
   @Override
   public Film update(final Film film) {
-    log.debug("Entering updateFilm method.");
-    final Long id = film.getId();
-    if (id == null) {
-      throw new IllegalArgumentException("Film ID must be provided.");
-    }
-    final Film oldFilm = films.get(id);
-    log.debug("Film before updating: {}", oldFilm);
-    if (oldFilm == null) {
-      throw new NotFoundException("Film with ID " + id + " not found.");
-    }
     checkDataDuplication(film);
-    films.put(id, film);
-    log.debug("Film after updating: {}", film);
+    films.put(film.getId(), film);
     return film;
   }
 
   @Override
-  public void delete(Long id) {
-
+  public void delete(final Long id) {
+    films.remove(id);
   }
 
   /**
-   * Checks for data duplication in the collection of films.
+   * Checks for data duplication in the collection of films. Verifies whether the given film already
+   * exists in the collection of films, excluding itself if it is already present (based on ID
+   * comparison). If a duplicate is found (a film with the same data but different ID), a
+   * {@link DuplicatedDataException} is thrown.
    *
-   * @param film – the film to check for duplication
+   * @param film the film to check for duplication
+   * @throws DuplicatedDataException if the action would result in duplication
    */
   private void checkDataDuplication(final Film film) {
-    final Optional<Film> duplicateFilm = films.values().stream()
-        .filter(f -> f.equals(film))
-        .findFirst();
-    boolean isDuplicate = duplicateFilm.isPresent();
+    boolean isDuplicate = films.values().stream()
+        .anyMatch(existingFilm ->
+            !existingFilm.getId().equals(film.getId()) && existingFilm.equals(film));
     log.debug("Checking duplication - {}", isDuplicate);
     if (isDuplicate) {
       throw new DuplicatedDataException("Action would result in duplication.");
     }
   }
+
   /**
    * Generates the next available film ID.
    *

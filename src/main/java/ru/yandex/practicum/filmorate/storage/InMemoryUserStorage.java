@@ -2,13 +2,11 @@ package ru.yandex.practicum.filmorate.storage;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 @Component
@@ -16,11 +14,10 @@ import ru.yandex.practicum.filmorate.model.User;
 public class InMemoryUserStorage implements UserStorage {
 
   private final Map<Long, User> users = new HashMap<>();
-  private Long lastId = 0l;
+  private Long lastId = 0L;
 
   @Override
   public User save(final User user) {
-    log.debug("Entering saveUser method.");
     checkDataDuplication(user);
     user.setId(getNextId());
     users.put(user.getId(), user);
@@ -28,7 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
   }
 
   @Override
-  public Optional<User> findById(Long id) {
+  public Optional<User> findById(final Long id) {
     return Optional.ofNullable(users.get(id));
   }
 
@@ -39,23 +36,25 @@ public class InMemoryUserStorage implements UserStorage {
 
   @Override
   public User update(final User user) {
-    log.debug("Entering updateUser method.");
     final Long id = user.getId();
     checkDataDuplication(user);
     users.put(id, user);
-    log.debug("User after updating: {}", user);
     return user;
   }
 
   @Override
-  public void delete(Long id) {
+  public void delete(final Long id) {
     users.remove(id);
   }
 
   /**
-   * Checks for data duplication in the collection of users.
+   * Checks for data duplication in the collection of users. Verifies whether the given user already
+   * exists in the collection of users, excluding itself if it is already present (based on ID
+   * comparison). If a duplicate is found (a user with the same data but different ID), a
+   * {@link DuplicatedDataException} is thrown.
    *
-   * @param user the user to check for duplication
+   * @param user the film to check for duplication
+   * @throws DuplicatedDataException if the action would result in duplication
    */
   private void checkDataDuplication(final User user) {
     boolean isDuplicate = users.values().stream()
@@ -76,8 +75,4 @@ public class InMemoryUserStorage implements UserStorage {
   private long getNextId() {
     return ++lastId;
   }
-
-
-
-
 }

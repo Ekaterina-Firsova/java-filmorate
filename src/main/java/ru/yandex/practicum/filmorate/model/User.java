@@ -51,6 +51,9 @@ public class User {
   @Past(message = "Birthday should be in the past.")
   private LocalDate birthday;
 
+  /**
+   * A set of the user IDs representing the users friends list.
+   */
   private final Set<Long> friends = new HashSet<>();
 
 }

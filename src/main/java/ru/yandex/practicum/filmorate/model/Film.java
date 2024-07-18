@@ -6,6 +6,8 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -55,5 +57,11 @@ public class Film {
    */
   @Positive(message = "Duration must be a positive number.")
   private Long duration;
+
+  /**
+   * A set of the user IDs representing the users who have liked this film. Each user can like the
+   * film only once.
+   */
+  private final Set<Long> likes = new HashSet<>();
 
 }

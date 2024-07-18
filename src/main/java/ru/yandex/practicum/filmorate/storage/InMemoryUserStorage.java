@@ -47,6 +47,11 @@ public class InMemoryUserStorage implements UserStorage {
     users.remove(id);
   }
 
+  @Override
+  public boolean isExist(Long id) {
+    return users.get(id) != null;
+  }
+
   /**
    * Checks for data duplication in the collection of users. Verifies whether the given user already
    * exists in the collection of users, excluding itself if it is already present (based on ID
@@ -75,4 +80,5 @@ public class InMemoryUserStorage implements UserStorage {
   private long getNextId() {
     return ++lastId;
   }
+
 }

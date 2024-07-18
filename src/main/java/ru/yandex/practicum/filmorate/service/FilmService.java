@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 /**
  * A service class that handles film related operations and interactions, including CRUD operations,
@@ -39,7 +39,7 @@ public class FilmService implements CrudService<Film> {
 
   private final FilmStorage filmStorage;
 
-  private final UserService userService;
+  private final UserStorage userStorage;
 
   @Override
   public Film save(final Film film) {
@@ -79,7 +79,7 @@ public class FilmService implements CrudService<Film> {
     log.debug("Inside the addLike method, user with ID {} likes the film with ID {} ", userId,
         filmId);
     final Film film = getFilmOrThrow(filmId);
-    final User user = userService.getById(userId);
+    validateUserExist(userId);
     film.getLikes().add(userId);
     return film;
   }
@@ -87,7 +87,7 @@ public class FilmService implements CrudService<Film> {
   public Film removeLike(Long filmId, Long userId) {
     log.debug("Inside the removeLike method, user with ID [] ");
     final Film film = getFilmOrThrow(filmId);
-    final User user = userService.getById(userId);
+    validateUserExist(userId);
     film.getLikes().remove(userId);
     return film;
   }
@@ -103,7 +103,12 @@ public class FilmService implements CrudService<Film> {
     if (id == null || filmStorage.findById(id).isEmpty()) {
       throw new NotFoundException("Film with ID = " + id + " not found.");
     }
+  }
 
+  private void validateUserExist(final Long id) {
+    if (!userStorage.isExist(id)) {
+      throw new NotFoundException("User with Id = " + id + "not found.");
+    }
   }
 
 }

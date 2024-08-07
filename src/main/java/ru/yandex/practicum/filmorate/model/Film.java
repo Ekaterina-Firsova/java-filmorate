@@ -59,6 +59,17 @@ public class Film {
   private Long duration;
 
   /**
+   * The MPA rating of the film.
+   */
+  private MpaRating mpa;
+
+  /**
+   * A set of genres associated with the film.
+   */
+  private final Set<Genre> gernres = new HashSet<Genre>();
+
+
+  /**
    * A set of the user IDs representing the users who have liked this film. Each user can like the
    * film only once.
    */

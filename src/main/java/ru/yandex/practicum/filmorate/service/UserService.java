@@ -4,10 +4,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -16,10 +19,10 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <p>
  * The service relies on an underlying storage mechanism provided by {@link UserStorage}.
  * <p>
- * It provides methods
+ * It provides methods:
  * <ul>
- * <li>{@link #save(User)}: Saves a new user to the storage.</li>
- * <li>{@link #update(User)}: Updates an existing user in the storage.</li>
+ * <li>{@link #save(UserDto)}: Saves a new user to the storage. Returns saved user with generated ID.</li>
+ * <li>{@link #update(UserDto)}: Updates an existing user in the storage. Returns updated user data.</li>
  * <li>{@link #getAll()}: Retrieves all users from the storage.</li>
  * <li>{@link #getById(Long)}: Retrieves a user by their ID.</li>
  * <li>{@link #addFriend(Long, Long)}: Adds a friend to the user's friend list.</li>
@@ -29,86 +32,91 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * </ul>
  *
  * @see User
+ * @see UserDto
  * @see UserStorage
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class UserService implements CrudService<User> {
+public class UserService implements CrudService<UserDto> {
 
   private final UserStorage userStorage;
 
-  @Override
-  public User save(final User user) {
-    log.debug("Inside save method to safe a user {}", user);
-    checkAndSetUserName(user);
-    return userStorage.save(user);
+  @Autowired
+  public UserService(@Qualifier("userDbStorage") final UserStorage userStorage) {
+    this.userStorage = userStorage;
   }
 
   @Override
-  public User update(final User user) {
-    log.debug("Inside update method to update a user with data: {}", user);
-    final Long id = user.getId();
-    validateUserId(id);
+  public UserDto save(final UserDto userDto) {
+    log.debug("Inside save method to safe a user {}", userDto);
+    final User user = UserMapper.mapToUser(userDto);
     checkAndSetUserName(user);
-    return userStorage.update(user);
+    return UserMapper.mapToUserDto(userStorage.save(user));
   }
 
   @Override
-  public Collection<User> getAll() {
+  public UserDto update(final UserDto userDto) {
+    log.debug("Inside update method to update a user with data: {}", userDto);
+    validateUserId(userDto.getId());
+    final User user = UserMapper.mapToUser(userDto);
+    checkAndSetUserName(user);
+    return UserMapper.mapToUserDto(userStorage.update(user));
+  }
+
+  @Override
+  public Collection<UserDto> getAll() {
     log.debug("Inside getAll method");
-    return userStorage.findAll();
+    return userStorage.findAll().stream()
+        .map(UserMapper::mapToUserDto).toList();
   }
 
   @Override
-  public User getById(Long id) {
+  public UserDto getById(final Long id) {
     log.debug("Inside getByID method to get a user with ID = {}", id);
-    return getUserByIdOrThrow(id);
+    return UserMapper.mapToUserDto(getUserByIdOrThrow(id));
   }
 
-
-  public User addFriend(final Long userId, final Long newFriendId) {
-    log.debug("Adding friends to both: {} and {}", userId, newFriendId);
-    final User user = getUserByIdOrThrow(userId);
-    final User newFriend = getUserByIdOrThrow(newFriendId);
-
-    user.getFriends().add(newFriendId);
-    newFriend.getFriends().add(userId);
-    return user;
+  public UserDto addFriend(final Long userId, final Long newFriendId) {
+    log.debug("Inside 'addFriend' method: user with id = {} is adding a friend with id = {}",
+        userId, newFriendId);
+    validateUserId(userId);
+    validateUserId(newFriendId);
+    if (userId.equals(newFriendId)) {
+      throw new IllegalArgumentException("User cannot be friends with themselves.");
+    }
+    final User user = userStorage.addFriend(userId, newFriendId);
+    return UserMapper.mapToUserDto(user);
   }
 
-  public List<User> getUserFriends(final Long id) {
+  public List<UserDto> getUserFriends(final Long id) {
     log.debug("Inside getUserFriends for the ID = {}", id);
-    final User user = getUserByIdOrThrow(id);
-    return user.getFriends().stream()
-        .map(this::getUserByIdOrThrow)
-        .toList();
+    validateUserId(id);
+    return userStorage.getFriends(id).stream().map(UserMapper::mapToUserDto).toList();
   }
 
-  public List<User> getMutualFriends(final Long userOneId, final Long userTwoId) {
-    log.debug("Inside getMutualFriends for userd with ID {} and {}", userOneId, userTwoId);
-    final User userOne = getUserByIdOrThrow(userOneId);
-    final User userTwo = getUserByIdOrThrow(userTwoId);
+  public List<UserDto> getMutualFriends(final Long userOneId, final Long userTwoId) {
+    log.debug("Inside getMutualFriends for user with ID {} and {}", userOneId, userTwoId);
+    validateUserId(userOneId);
+    validateUserId(userTwoId);
+    final List<User> userOneFriends = userStorage.getFriends(userOneId);
+    final List<User> userTwoFriends = userStorage.getFriends(userTwoId);
 
-    Set<Long> mutualFriendsIds = new HashSet<>(userOne.getFriends());
-    mutualFriendsIds.retainAll(userTwo.getFriends());
+    final Set<User> mutualFriendsIds = new HashSet<>(userOneFriends);
+    mutualFriendsIds.retainAll(userTwoFriends);
     log.debug("Getting mutual friend for users1 friends {} and user2 friends {} and getting {}",
-        userOne.getFriends(), userTwo.getFriends(), mutualFriendsIds);
-
+        userOneFriends, userTwoFriends, mutualFriendsIds);
     return mutualFriendsIds.stream()
-        .map(this::getUserByIdOrThrow)
+        .map(UserMapper::mapToUserDto)
         .toList();
   }
 
-  public User removeFriend(final Long userId, final Long friendToRemoveId) {
+  public UserDto removeFriend(final Long userId, final Long friendToRemoveId) {
     log.debug("Inside removeFriend to remove from user with ID {} a friend with ID {} ", userId,
         friendToRemoveId);
-    final User user = getUserByIdOrThrow(userId);
-    final User friendToRemove = getUserByIdOrThrow(friendToRemoveId);
-
-    user.getFriends().remove(friendToRemoveId);
-    friendToRemove.getFriends().remove(userId);
-    return user;
+    validateUserId(userId);
+    validateUserId(friendToRemoveId);
+    userStorage.removeFriend(userId, friendToRemoveId);
+    return UserMapper.mapToUserDto(getUserByIdOrThrow(userId));
   }
 
   private User getUserByIdOrThrow(final Long id) {
@@ -119,7 +127,8 @@ public class UserService implements CrudService<User> {
 
   private void validateUserId(final Long id) {
     log.debug("Validating user id {} is not null and exist in DB", id);
-    if (id == null || userStorage.findById(id).isEmpty()) {
+    if (id == null || !userStorage.isExist(id)) {
+      log.warn("User with ID = {} not found in storage.", id);
       throw new NotFoundException("User with ID = " + id + " not found.");
     }
   }

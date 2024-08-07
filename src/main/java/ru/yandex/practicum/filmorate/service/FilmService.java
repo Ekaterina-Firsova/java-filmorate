@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -33,13 +35,18 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * @see UserService
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class FilmService implements CrudService<Film> {
 
   private final FilmStorage filmStorage;
 
   private final UserStorage userStorage;
+
+  @Autowired
+  public FilmService(final FilmStorage filmStorage, @Qualifier("userDbStorage") final UserStorage userStorage) {
+    this.filmStorage = filmStorage;
+    this.userStorage = userStorage;
+  }
 
   @Override
   public Film save(final Film film) {
@@ -62,7 +69,7 @@ public class FilmService implements CrudService<Film> {
   }
 
   @Override
-  public Film getById(Long id) {
+  public Film getById(final Long id) {
     log.debug("Inside getByID to get a film {}", id);
     return getFilmOrThrow(id);
   }
@@ -84,7 +91,7 @@ public class FilmService implements CrudService<Film> {
     return film;
   }
 
-  public Film removeLike(Long filmId, Long userId) {
+  public Film removeLike(final Long filmId, final Long userId) {
     log.debug("Inside the removeLike method, user with ID [] ");
     final Film film = getFilmOrThrow(filmId);
     validateUserExist(userId);

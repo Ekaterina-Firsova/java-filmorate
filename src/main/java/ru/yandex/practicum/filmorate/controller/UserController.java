@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 /**
@@ -38,9 +38,9 @@ public class UserController {
    * @return the added user
    */
   @PostMapping
-  public User save(@Valid @RequestBody final User user) {
+  public UserDto save(@Valid @RequestBody final UserDto user) {
     log.info("Received request POST /users with body: {}", user);
-    final User savedUser = userService.save(user);
+    final UserDto savedUser = userService.save(user);
     log.info("User successfully added: {}", savedUser);
     return savedUser;
   }
@@ -52,9 +52,9 @@ public class UserController {
    * @return the updated user
    */
   @PutMapping
-  public User update(@Valid @RequestBody final User newUser) {
+  public UserDto update(@Valid @RequestBody final UserDto newUser) {
     log.info("Received request PUT /users with body: {}", newUser);
-    final User updatedUser = userService.update(newUser);
+    final UserDto updatedUser = userService.update(newUser);
     log.info("User updated successfully: {}", updatedUser);
     return updatedUser;
   }
@@ -67,10 +67,10 @@ public class UserController {
    * @return The updated user with the added friend.
    */
   @PutMapping("/{id}/friends/{friendId}")
-  public User addFriend(@PathVariable("id") @NotNull final Long id,
+  public UserDto addFriend(@PathVariable("id") @NotNull final Long id,
       @PathVariable("friendId") @NotNull final Long friendId) {
     log.info("Received request PUT users/{}/friends/{}", id, friendId);
-    final User user = userService.addFriend(id, friendId);
+    final UserDto user = userService.addFriend(id, friendId);
     log.info("Adding friend to the user is successful: {}", user);
     return user;
   }
@@ -81,7 +81,7 @@ public class UserController {
    * @return a collection of all users
    */
   @GetMapping
-  public Collection<User> getAll() {
+  public Collection<UserDto> getAll() {
     log.info("Received request GET users");
     return userService.getAll();
   }
@@ -93,7 +93,7 @@ public class UserController {
    * @return The list of friends of the user with the specified ID.
    */
   @GetMapping("/{id}/friends")
-  public List<User> getFriendsByUserId(@PathVariable @NotNull final Long id) {
+  public List<UserDto> getFriendsByUserId(@PathVariable @NotNull final Long id) {
     log.info("Received request GET users/{}/friends", id);
     return userService.getUserFriends(id);
   }
@@ -106,7 +106,7 @@ public class UserController {
    * @return The List of mutual friends between the two users..
    */
   @GetMapping("/{id}/friends/common/{otherId}")
-  public List<User> getMutualFriends(@PathVariable("id") @NotNull final Long id,
+  public List<UserDto> getMutualFriends(@PathVariable("id") @NotNull final Long id,
       @PathVariable("otherId") @NotNull final Long otherId) {
     log.info("Received request GET users/{}/friends/common/{}", id, otherId);
     return userService.getMutualFriends(id, otherId);
@@ -120,7 +120,7 @@ public class UserController {
    * @return The updated user data.
    */
   @DeleteMapping("/{id}/friends/{friendId}")
-  public User deleteFriend(@PathVariable("id") @NotNull final Long id,
+  public UserDto deleteFriend(@PathVariable("id") @NotNull final Long id,
       @PathVariable("friendId") @NotNull final Long friendId) {
     log.info("Received request DELETE users/{}/friends/{}", id, friendId);
     return userService.removeFriend(id, friendId);

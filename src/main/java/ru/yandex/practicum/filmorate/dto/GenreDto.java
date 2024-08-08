@@ -1,19 +1,18 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 /**
- * Represents a film genre in the Filmorate application.
- * <p>
- * The {@code Genre} class defines the type or category of a film, such as Comedy, Drama, Animation,
- * etc. Each genre is uniquely identified by an ID and has a unique name.
+ * Data transfer Object representing a Genre.
+ * @see Genre
  */
 @Data
 @Builder
-public class Genre {
+public class GenreDto {
 
   private static final int MAX_NAME_LENGTH = 100;
 

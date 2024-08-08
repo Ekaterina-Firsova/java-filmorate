@@ -55,9 +55,9 @@ public class FilmController {
    */
   @PutMapping
   public Film update(@Valid @RequestBody final Film newFilm) {
-    log.info("Received request PUT /films with body: {}", newFilm);
+    log.info("Received request PUT /films with body: {}.", newFilm);
     final Film updatedFilm = filmService.update(newFilm);
-    log.info("Film updated successfully: {}", updatedFilm);
+    log.info("Film updated successfully: {}.", updatedFilm);
     return updatedFilm;
   }
 
@@ -71,9 +71,9 @@ public class FilmController {
   @PutMapping("/{id}/like/{userId}")
   public Film addLike(@PathVariable("id") @NotNull final Long id,
       @PathVariable("userId") @NotNull final Long userId) {
-    log.info("Received request PUT films/{}/like/{}", id, userId);
+    log.info("Received request PUT films/{}/like/{}.", id, userId);
     final Film filmWithNewLike = filmService.addLike(id, userId);
-    log.info("Like was added to the film successfully: {}", filmWithNewLike);
+    log.info("Like was added to the film successfully: {}.", filmWithNewLike);
     return filmWithNewLike;
   }
 
@@ -84,6 +84,7 @@ public class FilmController {
    */
   @GetMapping
   public Collection<Film> getAll() {
+    log.info("Received request GET /films.");
     return filmService.getAll();
   }
 

@@ -11,9 +11,11 @@ import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import ru.yandex.practicum.filmorate.model.User;
 
 /**
  * Data Transfer Object representing a User.
+ * @see User
  */
 @Data
 @EqualsAndHashCode(of = {"email", "login", "birthday"})

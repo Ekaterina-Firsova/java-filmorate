@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 /**
- * Implementation of the {@link GenreStorage} fro managing {@link Genre} entities in the database.
+ * Implementation of the {@link GenreStorage} for managing {@link Genre} entities in the database.
  * <p> This class provides methods implementations for Read only operations on genre records.
  * <p> It extends BaseRepository for utilizing Spring's JdbcTemplate for database interactions.
+ *
  * @see ReadOnlyStorage
  * @see GenreStorage
  */

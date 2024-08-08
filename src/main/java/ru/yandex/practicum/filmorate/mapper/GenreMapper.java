@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 /**
- * Utility class from mapping between {@link Genre} and {@link GenreDto}.
+ * Utility class for mapping between {@link Genre} and {@link GenreDto}.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GenreMapper {

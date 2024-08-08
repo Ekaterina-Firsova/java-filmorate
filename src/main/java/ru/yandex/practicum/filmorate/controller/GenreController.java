@@ -13,8 +13,8 @@ import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 /**
- * Controller class responsible for handling requests related to genres in the Filmorate Application.
- * Provides endpoints to retrieve genre information which can be associated with films.
+ * Controller class responsible for handling requests related to genres in the Filmorate
+ * Application. Provides endpoints to retrieve genre information which can be associated with films.
  * All endpoints in this controller are relative to the base path {@code "/genres'}.
  */
 @Slf4j
@@ -27,8 +27,8 @@ public class GenreController {
   private final GenreService genreService;
 
   /**
-   * Retrieves a list of all available genres.
-   * Handles GET request to the base path.
+   * Retrieves a list of all available genres. Handles GET request to the base path.
+   *
    * @return a list of {@link GenreDto} representing all genres.
    */
   @GetMapping
@@ -38,8 +38,9 @@ public class GenreController {
   }
 
   /**
-   * Retrieves details of a specific genre by its ID.
-   * Handles GET request to the path  "/genres/{id}".
+   * Retrieves details of a specific genre by its ID. Handles GET request to the path
+   * "/genres/{id}".
+   *
    * @param id - The ID of the genre to retrieve.
    * @return a {@link GenreDto} representing the genre details.
    */

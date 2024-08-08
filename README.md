@@ -44,7 +44,7 @@ The `Film` table holds information about the films available in the application.
 |---------------|---------|------------------------------------|---------------------------------|
 | id            | bigint  | PK                                 | unique identification for films |   
 | name          | varchar | not null, max length: 255          | film name                       |
-| description   | varchar | null,max length: 1000              | film description                |
+| description   | varchar | null,max length: 200               | film description                |
 | release_date  | date    | not null                           | film release date               |
 | duration      | integer | not null, note: 'Must be positive' | film duration in minutes        |
 | mpa_rating_id | bigint  | null, FK(mpa_ratings.id)           | references MPA rating ID        |

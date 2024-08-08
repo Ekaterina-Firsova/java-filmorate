@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.db;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -8,6 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
+import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
+import ru.yandex.practicum.filmorate.storage.ReadOnlyStorage;
 
 /**
  * Implementation of the {@link MpaRatingStorage} for managing {@link MpaRating} entities in the
@@ -17,6 +20,7 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
  *
  * @see ReadOnlyStorage
  * @see MpaRatingStorage
+ * @see BaseRepository
  */
 @Repository
 @Slf4j
@@ -24,6 +28,7 @@ public class MpaRatingDbStorage extends BaseRepository<MpaRating> implements Mpa
 
   private static final String FIND_ALL_QUERY = "SELECT * FROM mpa_rating ORDER BY id";
   private static final String FIND_BY_ID_QUERY = "SELECT * FROM mpa_rating WHERE id = ?";
+  private static final String EXIST_QUERY = "SELECT EXISTS(SELECT 1 FROM mpa_rating WHERE id = ?)";
 
   @Autowired
   public MpaRatingDbStorage(JdbcTemplate jdbc,
@@ -41,4 +46,8 @@ public class MpaRatingDbStorage extends BaseRepository<MpaRating> implements Mpa
     return findOne(FIND_BY_ID_QUERY, id);
   }
 
+  @Override
+  public boolean isExist(final Long id) {
+    return checkExistence(EXIST_QUERY, id);
+  }
 }

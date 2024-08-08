@@ -18,6 +18,12 @@ public class ErrorHandler {
 
   @ExceptionHandler
   @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handlerInvalidDataException(final InvalidDataException e) {
+    return new ErrorResponse(e.getMessage());
+  }
+
+  @ExceptionHandler
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handlerDuplicatedDataException(final DuplicatedDataException e) {
     return new ErrorResponse(e.getMessage());
   }

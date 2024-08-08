@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import java.util.List;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryUserStorage;
 
 /**
@@ -43,11 +44,4 @@ public interface UserStorage extends Storage<User> {
    */
   List<User> getFriends(Long id);
 
-  /**
-   * Checks if a user with a given ID exists in the storage.
-   *
-   * @param id The ID of the user to check.
-   * @return true if the user exists, false otherwise.
-   */
-  boolean isExist(Long id);
 }

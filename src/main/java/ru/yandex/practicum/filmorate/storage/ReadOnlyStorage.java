@@ -24,4 +24,14 @@ public interface ReadOnlyStorage<T> {
    * @return a Collection containing all entities
    */
   Collection<T> findAll();
+
+  /**
+   * Checks if an entity with a given ID exists in the storage. Params: id – The ID of the entity to
+   * check.
+   *
+   * @param id
+   * @return true if the entity exists, false otherwise
+   */
+  boolean isExist(Long id);
 }
+

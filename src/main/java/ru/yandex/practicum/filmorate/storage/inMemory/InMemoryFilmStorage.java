@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.inMemory;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
@@ -36,6 +39,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     return films.values();
   }
 
+
+  @Override
+  public boolean isExist(Long id) {
+    return Optional.ofNullable(films.get(id)).isPresent();
+  }
+
   @Override
   public Film update(final Film film) {
     checkDataDuplication(film);
@@ -46,6 +55,32 @@ public class InMemoryFilmStorage implements FilmStorage {
   @Override
   public void delete(final Long id) {
     films.remove(id);
+  }
+
+  @Override
+  public List<Film> getTopFilms(int count) {
+    log.debug("Inside the getTopFilms to get top {} films", count);
+    return films.values().stream()
+        .sorted(Comparator.comparing((Film film) -> film.getLikes().size()).reversed())
+        .limit(count)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Film addLike(Long filmId, Long userId) {
+    log.debug("Inside the addLike method, user with ID {} likes the film with ID {} ", userId,
+        filmId);
+    final Film film = films.get(filmId);
+    film.getLikes().add(userId);
+    return film;
+  }
+
+  @Override
+  public Film removeLike(Long filmId, Long userId) {
+    log.debug("Inside the removeLike method, user with ID [] ");
+    final Film film = films.get(filmId);
+    film.getLikes().remove(userId);
+    return film;
   }
 
   /**
@@ -75,4 +110,6 @@ public class InMemoryFilmStorage implements FilmStorage {
   private long getNextId() {
     return ++lastId;
   }
+
+
 }

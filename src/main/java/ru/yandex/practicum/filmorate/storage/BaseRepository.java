@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import ru.yandex.practicum.filmorate.exceptions.InternalServerException;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.rowmappers.UserRowMapper;
 
 /**
@@ -48,7 +49,10 @@ public abstract class BaseRepository<T> {
       return ps;
     }, keyHolder);
     return Optional.ofNullable(keyHolder.getKeyAs(Long.class))
-        .orElseThrow(() -> new InternalServerException("Data saving failed: No ID obtained."));
+        .orElseThrow(() -> {
+          log.warn("Data saving failed: No ID obtained for the entity.");
+          return new InternalServerException("Data saving failed: No ID obtained.");
+        });
   }
 
   protected void insertCompositePk(final String query, Object... params) {
@@ -102,4 +106,13 @@ public abstract class BaseRepository<T> {
     log.debug("Rows affected after deleting: {}", rowDeleted);
     return rowDeleted > 0;
   }
+
+  protected boolean checkExistence(final String query, Object... params) {
+    try {
+      return Boolean.TRUE.equals(jdbc.queryForObject(query, Boolean.class, params));
+    } catch (EmptyResultDataAccessException ignored) {
+      return false;
+    }
+  }
+
 }

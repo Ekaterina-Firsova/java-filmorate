@@ -22,12 +22,12 @@ public class MpaRatingService {
     return mpaRatingStorage.findAll().stream().map(MpaRatingMapper::mapToMpaRatingDto).toList();
   }
 
-  public MpaRatingDto getById(Long id) {
+  public MpaRatingDto getById(final Long id) {
     log.debug("Inside getByID method to get a mpa rating with ID = {}.", id);
     return MpaRatingMapper.mapToMpaRatingDto(getMpaRatingByIdOrThrow(id));
   }
 
-  private MpaRating getMpaRatingByIdOrThrow(Long id) {
+  private MpaRating getMpaRatingByIdOrThrow(final Long id) {
     log.debug("Getting a genre instance for ID = {} from the storage.", id);
     return mpaRatingStorage.findById(id)
         .orElseThrow(() -> new NotFoundException("Genre with ID = " + id + " doesn't exist."));

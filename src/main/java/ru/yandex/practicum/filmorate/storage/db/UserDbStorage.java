@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.db;
 
 import java.sql.Date;
 import java.util.Collection;
@@ -8,12 +8,14 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
+import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 /**
  * Implementation of {@link UserStorage} for managing {@link User} entities in the database.
@@ -107,7 +109,6 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
       user.getFriends().addAll(friends);
     });
     return userOpt;
-
   }
 
   @Override
@@ -139,11 +140,7 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
 
   @Override
   public boolean isExist(final Long id) {
-    try {
-      return Boolean.TRUE.equals(jdbc.queryForObject(EXIST_QUERY, Boolean.class, id));
-    } catch (EmptyResultDataAccessException ignored) {
-      return false;
-    }
+    return checkExistence(EXIST_QUERY, id);
   }
 
   private Set<Long> getFriendsIds(Long userId) {

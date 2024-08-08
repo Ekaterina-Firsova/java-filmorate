@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.db;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -8,6 +8,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.BaseRepository;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.ReadOnlyStorage;
 
 /**
  * Implementation of the {@link GenreStorage} for managing {@link Genre} entities in the database.
@@ -23,6 +26,14 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
 
   private static final String FIND_ALL_QUERY = "SELECT * FROM genre ORDER BY id ASC";
   private static final String FIND_BY_ID_QUERY = "SELECT * FROM genre WHERE id = ?";
+  private static final String EXIST_QUERY = "SELECT EXISTS(SELECT 1 FROM genre WHERE id = ?)";
+  private static final String GET_FILM_GENRES_QUERY = """
+      SELECT g.*
+      FROM genre g
+      RIGHT JOIN film_genre fg ON g.id = fg.genre_id
+      WHERE fg.film_id = ?
+      ORDER BY g.id ASC
+      """;
 
   @Autowired
   public GenreDbStorage(final JdbcTemplate jdbc, final RowMapper<Genre> mapper) {
@@ -39,4 +50,13 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
     return findOne(FIND_BY_ID_QUERY, id);
   }
 
+  @Override
+  public boolean isExist(final Long id) {
+    return checkExistence(EXIST_QUERY, id);
+  }
+
+  @Override
+  public Collection<Genre> getGenresForFilm(final Long filmId) {
+    return findMany(GET_FILM_GENRES_QUERY, filmId);
+  }
 }

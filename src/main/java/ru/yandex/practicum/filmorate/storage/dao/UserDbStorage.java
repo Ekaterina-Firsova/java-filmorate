@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.db;
+package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.sql.Date;
 import java.util.Collection;

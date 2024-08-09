@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import java.util.List;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryFilmStorage;
 
 /**

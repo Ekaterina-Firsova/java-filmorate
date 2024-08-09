@@ -41,6 +41,7 @@ public class FilmDto {
   private LocalDate releaseDate;
 
   @Positive(message = "Duration must be a positive number.")
+  @NotNull(message = "Duration should not be null.")
   private Long duration;
 
   @NotNull(message = "MPA rate should not be null.")

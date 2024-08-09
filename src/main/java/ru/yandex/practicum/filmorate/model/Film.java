@@ -55,6 +55,7 @@ public class Film {
   /**
    * The duration of the film in minutes. Must be a positive number.
    */
+  @NotNull(message = "Duration should not be null.")
   @Positive(message = "Duration must be a positive number.")
   private Long duration;
 

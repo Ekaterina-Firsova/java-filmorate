@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.FilmorateApplication;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
@@ -15,10 +16,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 
-@Component
+@Component("inMemoryFilmStorage")
 @RequiredArgsConstructor
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
+    @Qualifier("inMemoryUserStorage")
     private final UserStorage userStorage; // Autowired reference to UserStorage
 
     @Override

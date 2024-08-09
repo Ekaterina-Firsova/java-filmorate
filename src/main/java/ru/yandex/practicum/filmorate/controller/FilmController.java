@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.NewFilmRequest;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.GenreService;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.Collection;
+
 
 /**
  * Controller для обслуживания фильмов
@@ -26,6 +33,9 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmController {
     private final FilmService filmService;
+    private final GenreService genreService;
+    private final MpaService mpaService;
+
 
     @GetMapping
     public Collection<Film> getAll() {
@@ -33,25 +43,43 @@ public class FilmController {
     }
 
     @GetMapping("{id}")
-    public Film getFilm(@PathVariable long id) {
-        return filmService.getFilm(id);
+    public NewFilmRequest getFilm(@PathVariable long id) {
+        Film resultFilm = filmService.getFilm(id);
+        NewFilmRequest newRequest = FilmMapper.mapToFilmRequest(resultFilm);
+        for (Genre reqGenre : newRequest.getGenres()) {
+            String name = genreService.getById(reqGenre.getId()).getName();
+            reqGenre.setName(name);
+        }
+
+        Mpa mpa = mpaService.getById(newRequest.getMpa().getId());
+        newRequest.getMpa().setName(mpa.getName());
+        newRequest.getMpa().setDescription(mpa.getDescription());
+
+        return newRequest;
     }
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film) {
-        log.info("POST createFilm: {}", film);
-        return filmService.createFilm(film);
+    public NewFilmRequest createFilm(@Valid @RequestBody NewFilmRequest request) {
+        log.info("POST createFilm: {}", request);
+        Film film = FilmMapper.mapToFilm(request);
+        Film resultFilm = filmService.createFilm(film);
+        return FilmMapper.mapToFilmRequest(resultFilm);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film newFilm) {
-        log.info("PUT update film: {}", newFilm);
-        return filmService.update(newFilm);
+    public NewFilmRequest update(@Valid @RequestBody NewFilmRequest request) {
+        log.info("PUT update film: {}", request);
+        //приводим запрос к виду нашей таблицы
+        Film film = FilmMapper.mapToFilm(request);
+        Film resultFilm = filmService.update(film);
+        //приводим ответ к виду запроса
+        return FilmMapper.mapToFilmRequest(resultFilm);
     }
 
-   /**
+    /**
      * запрос добавляет лайк определенного пользователя
-     * @param id идентификатор фильма
+     *
+     * @param id     идентификатор фильма
      * @param userId индетификатор пользователя
      * @return фильм
      */
@@ -61,10 +89,10 @@ public class FilmController {
         return filmService.addLike(id, userId);
     }
 
-    //
     /**
      * запрос удаляет лайк определенного пользователя
-     * @param id идентификатор фильма
+     *
+     * @param id     идентификатор фильма
      * @param userId индетификатор пользователя
      * @return фильм
      */
@@ -74,11 +102,10 @@ public class FilmController {
         return filmService.deleteLike(id, userId);
     }
 
-    //возвращает список из первых count фильмов по количеству лайков.
-    // Если значение параметра count не задано, вернет первые 10
     /**
      * возвращает список из первых count фильмов по количеству лайков.
      * Если значение параметра count не задано, вернет первые 10
+     *
      * @param count количество фильмом в выборке
      * @return коллекцию фильмов
      */

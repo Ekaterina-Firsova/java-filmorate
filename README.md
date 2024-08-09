@@ -4,17 +4,16 @@ https://dbdiagram.io/d/filmorate-6694ff719939893daef29ecb
 
 # Описание структуры БД
 
-### Films
+### films
 
 – содержит информацию о фильмах
 
 - id – уникальный идентификатор
 - name – название фильма
 - description – описание фильма
-- releaseDate – дата выпуска
+- release_date – дата выпуска
 - duration – продолжительность в секуднах
-- id_rating – рейтинг МРА
-- created_at – время создания записи
+- id_mpa – рейтинг МРА
 
 ### users
 
@@ -25,19 +24,17 @@ https://dbdiagram.io/d/filmorate-6694ff719939893daef29ecb
 - email – электронная почта
 - login - логин
 - birthday – дата рождения
-- created_at - время создания записи
 
-### genre
+### genres
 
 – справочник жанров
 
 - id – уникальный идентификатор
 - name – название жанра
 
-### films_genre
+### film_genres
 
 – содержит информацию у какого фильма какой жанр
-
 - id – уникальный идентификатор
 - id_genre – id жанра
 - id_film – id фильма
@@ -45,7 +42,6 @@ https://dbdiagram.io/d/filmorate-6694ff719939893daef29ecb
 ### user_likes
 
 – содержит информацию о том какой юзер какой фильм лайкнул
-
 - id – уникальный идентификатор
 - id_user – идентификатор пользователя
 - id_film – идентификатор фильма
@@ -59,7 +55,7 @@ https://dbdiagram.io/d/filmorate-6694ff719939893daef29ecb
 - confirmed – подтверждение совместной дружбы
 - id_friend – идентификатор пользователя, который записался в друзья
 
-### rating
+### mpa
 
 – справочник видов рейтинга МРА
 
@@ -75,8 +71,7 @@ Table films {
   description varchar
   release_date date
   duration integer
-  id_rating integer
-  created_at timestamp 
+  id_mpa integer
 }
 
 Table users {
@@ -85,16 +80,15 @@ Table users {
   email varchar
   login varchar
   birthday date
-  created_at timestamp
 }
 
-Table films_genre {
+Table film_genres {
   id integer [primary key]
   id_genre integer
   id_film integer
 }
 
-Table genre {
+Table genres {
   id integer [primary key]
   name varchar
 }
@@ -112,14 +106,15 @@ Table friends {
   id_friend integer 
 }
 
-Table rating {
+Table mpa {
   id integer [primary key]
   name varchar
+  description varchar
 }
 
-Ref: "films"."id" < "films_genre"."id_film"
+Ref: "films"."id" < "film_genres"."id_film"
 
-Ref: "genre"."id" < "films_genre"."id_genre"
+Ref: "genres"."id" < "film_genres"."id_genre"
 
 Ref: "films"."id" < "user_likes"."id_film"
 
@@ -129,5 +124,5 @@ Ref: "users"."id" < "friends"."id_user"
 
 Ref: "users"."id" < "friends"."id_friend"
 
-Ref: "films"."id_rating" > "rating"."id"
+Ref: "films"."id_mpa" > "mpa"."id"
 ```

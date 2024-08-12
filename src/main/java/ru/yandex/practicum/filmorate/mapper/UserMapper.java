@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -13,10 +12,10 @@ import ru.yandex.practicum.filmorate.model.User;
  *   <li>{@link #mapToUserDto(User)}: maps a {@link User} to {@link UserDto}.</li>
  * </ul>
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class UserMapper {
 
-  public static User mapToUser(final UserDto userDto) {
+  public User mapToUser(final UserDto userDto) {
     return User.builder()
         .login(userDto.getLogin())
         .name(userDto.getName())
@@ -26,7 +25,7 @@ public class UserMapper {
         .build();
   }
 
-  public static UserDto mapToUserDto(final User user) {
+  public UserDto mapToUserDto(final User user) {
     final UserDto userDto = UserDto.builder()
         .id(user.getId())
         .email(user.getEmail())

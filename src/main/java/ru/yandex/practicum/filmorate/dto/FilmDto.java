@@ -6,8 +6,10 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,6 +19,7 @@ import ru.yandex.practicum.filmorate.validator.DateAfter;
 
 /**
  * Data Transfer Object representing a Film.
+ *
  * @see Film
  */
 @Data
@@ -47,7 +50,7 @@ public class FilmDto {
   @NotNull(message = "MPA rate should not be null.")
   private MpaRating mpa;
 
-  private final Set<Genre> genres = new HashSet<>();
+  private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
 
   private final Set<Long> likes = new HashSet<>();
 }

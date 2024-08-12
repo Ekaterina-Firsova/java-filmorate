@@ -131,6 +131,7 @@ public class UserService implements CrudService<UserDto> {
       log.warn("User with ID = {} not found in storage.", id);
       throw new NotFoundException("User with ID = " + id + " not found.");
     }
+    log.debug("Success in validating user id {} is not null and exist in DB", id);
   }
 
   private void checkAndSetUserName(final User user) {

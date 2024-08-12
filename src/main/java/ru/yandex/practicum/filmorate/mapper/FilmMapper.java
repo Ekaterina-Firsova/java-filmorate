@@ -1,17 +1,16 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 /**
  * Utility class for mapping between {@link Film} entity and {@link FilmDto}.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class FilmMapper {
 
-  public static Film mapToFilm(final FilmDto filmDto) {
+  public Film mapToFilm(final FilmDto filmDto) {
     final Film film = Film.builder()
         .id(filmDto.getId())
         .name(filmDto.getName())
@@ -25,7 +24,7 @@ public class FilmMapper {
     return film;
   }
 
-  public static FilmDto mapToFilmDto(final Film film) {
+  public FilmDto mapToFilmDto(final Film film) {
     final FilmDto filmDto = FilmDto.builder()
         .id(film.getId())
         .name(film.getName())

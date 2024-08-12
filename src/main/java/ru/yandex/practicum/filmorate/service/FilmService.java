@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -140,13 +141,13 @@ public class FilmService implements CrudService<FilmDto> {
     if (genres.isEmpty()) {
       return;
     }
-    genres.stream()
-        .filter(genre -> !genreStorage.isExist(genre.getId()))
-        .findFirst()
-        .ifPresent(genre -> {
-          log.warn("Validating genres failed: {} does not exist in db.", genre);
-          throw new InvalidDataException("One or more genres do not exist.");
-        });
+    final Set<Long> genreIds = genres.stream().map(Genre::getId).collect(Collectors.toSet());
+    final Integer existONes = genreStorage.countExistedIds(genreIds);
+
+    if (genreIds.size() != existONes) {
+      log.warn("Validating genres failed: ids for validating");
+      throw new InvalidDataException("One or more genres do not exist.");
+    }
   }
 
   private void validateMpa(final MpaRating mpa) {

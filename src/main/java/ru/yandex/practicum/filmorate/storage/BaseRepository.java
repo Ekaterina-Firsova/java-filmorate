@@ -40,14 +40,7 @@ public abstract class BaseRepository<T> {
 
   protected long insert(final String query, Object... params) {
     log.debug("Executing insert with query: {} and parameters: {}", query, params);
-    final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-    jdbc.update(connection -> {
-      PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-      for (int idx = 0; idx < params.length; idx++) {
-        ps.setObject(idx + 1, params[idx]);
-      }
-      return ps;
-    }, keyHolder);
+    final GeneratedKeyHolder keyHolder = insertData(query, params);
     return Optional.ofNullable(keyHolder.getKeyAs(Long.class))
         .orElseThrow(() -> {
           log.warn("Data saving failed: No ID obtained for the entity.");
@@ -58,14 +51,7 @@ public abstract class BaseRepository<T> {
   protected void insertCompositePk(final String query, Object... params) {
     log.debug("Executing insert for Table with Composite PK, query: {} and parameters: {}", query,
         params);
-    final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-    jdbc.update(connection -> {
-      PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-      for (int idx = 0; idx < params.length; idx++) {
-        ps.setObject(idx + 1, params[idx]);
-      }
-      return ps;
-    }, keyHolder);
+    final GeneratedKeyHolder keyHolder = insertData(query, params);
     final Map<String, Object> keys = keyHolder.getKeys();
     if (keys == null || keys.isEmpty()) {
       log.warn("Insert operation failed: No keys returned: {}", keys);
@@ -85,7 +71,8 @@ public abstract class BaseRepository<T> {
 
   protected Collection<T> findMany(final String query, Object... params) {
     log.debug("Executing findMany with query: {} and parameters: {}", query, params);
-    return jdbc.query(query, mapper, params);
+    Collection<T> c = jdbc.query(query, mapper, params);
+    return c;
   }
 
   protected Optional<T> findOne(final String query, Object... params) {
@@ -113,6 +100,19 @@ public abstract class BaseRepository<T> {
     } catch (EmptyResultDataAccessException ignored) {
       return false;
     }
+  }
+
+  private GeneratedKeyHolder insertData(final String query, Object... params) {
+    final GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+    jdbc.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement(
+          query, Statement.RETURN_GENERATED_KEYS);
+      for (int idx = 0; idx < params.length; idx++) {
+        ps.setObject(idx + 1, params[idx]);
+      }
+      return ps;
+    }, keyHolder);
+    return keyHolder;
   }
 
 }

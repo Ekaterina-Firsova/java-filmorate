@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,5 +60,14 @@ public class GenreDbStorage extends BaseRepository<Genre> implements GenreStorag
   @Override
   public Collection<Genre> getGenresForFilm(final Long filmId) {
     return findMany(GET_FILM_GENRES_QUERY, filmId);
+  }
+
+  @Override
+  public Integer countExistedIds(final Set<Long> genreIds) {
+    final String sql = "SELECT COUNT(*) FROM GENRE g WHERE g.id IN ("
+        + genreIds.stream()
+        .map(String::valueOf)
+        .collect(Collectors.joining(",")) + ")";
+    return jdbc.queryForObject(sql, Integer.class);
   }
 }

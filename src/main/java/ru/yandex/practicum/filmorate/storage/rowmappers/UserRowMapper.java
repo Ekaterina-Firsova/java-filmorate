@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.rowmappers;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
@@ -24,6 +25,12 @@ public class UserRowMapper implements RowMapper<User> {
         .name(rs.getString("name"))
         .birthday(Date.valueOf(rs.getString("birthday")).toLocalDate())
         .build();
+    mapFriends(rs, user);
     return user;
+  }
+
+  private void mapFriends(ResultSet rs, User user) throws SQLException {
+    final List<Long> friendIds = RowMapperHelper.extractListLong(rs, "friend");
+    friendIds.forEach(i -> user.getFriends().add(i));
   }
 }

@@ -179,16 +179,17 @@ public class FilmStorageTest {
   @Test
   @DisplayName("getTopFilms(Long) - returns top N amount the most liked by users films.")
   public void getTopFilmsWithTheMostLikesCount() {
-    final int count = 2;
+    final int count = 4;
 
     final List<Film> topFilms = filmStorage.getTopFilms(count);
 
+    System.out.println(topFilms);
     assertThat(topFilms)
         .isNotNull()
         .isNotEmpty()
         .hasSize(count)
         .extracting("id")
-        .containsExactly(4L, 2L);
+        .containsExactly(4L, 2L, 3L, 1L);
 
   }
 

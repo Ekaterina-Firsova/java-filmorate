@@ -2,10 +2,8 @@ package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.sql.Date;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,18 +41,33 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
       birthday = ?
       WHERE id = ?
       """;
-  private static final String FIND_ALL_QUERY = "SELECT * FROM \"user\"";
-  private static final String FIND_BY_ID_QUERY = "SELECT * FROM \"user\" WHERE id = ?";
+  private static final String FIND_ALL_QUERY = """
+      SELECT u.*,
+      array_agg(DISTINCT f.FRIEND_ID) AS friend
+      FROM "user" u
+      LEFT JOIN FRIENDSHIP f ON u.ID = f.ID
+      GROUP BY u.ID
+      """;
+  private static final String FIND_BY_ID_QUERY = """
+      SELECT u.*,
+      array_agg(DISTINCT f.FRIEND_ID) AS friend
+      FROM "user" u
+      LEFT JOIN FRIENDSHIP f ON u.ID = f.ID
+      WHERE u.id = ?
+      GROUP BY u.ID
+      """;
   private static final String DELETE_BY_ID_QUERY = "DELETE FROM \"user\" WHERE id = ?";
   private static final String ADD_FRIEND_QUERY = "INSERT INTO friendship (id, friend_id) VALUES(?,?)";
-  private static final String GET_FRIENDS_ID_QUERY = "SELECT friend_id FROM friendship WHERE id = ?";
-  private static final String GET_FRIENDS_QUERY = """
-      SELECT *
-      FROM "user"
-      WHERE id IN (SELECT friend_id
-                   FROM friendship
-                   WHERE id = ?)
-      """;
+  private static final String GET_FRIENDS_QUERY =
+      """
+          SELECT  u.*, array_agg(f2.FRIEND_ID) AS friend
+          FROM FRIENDSHIP f
+          LEFT JOIN "user" u ON f.friend_id = u.id
+          LEFT JOIN FRIENDSHIP f2 ON u.id = f2.id
+          LEFT JOIN "user" u2 ON f2.FRIEND_ID = u2.id
+          WHERE f.id = ?
+          Group BY u.id
+          """;
   private static final String REMOVE_FRIEND_QUERY = "DELETE FROM friendship WHERE id = ? AND friend_id = ?";
   private static final String EXIST_QUERY = "SELECT EXISTS(SELECT 1 FROM \"user\" WHERE id = ?)";
 
@@ -95,20 +108,12 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
 
   @Override
   public Collection<User> findAll() {
-    Collection<User> users = findMany(FIND_ALL_QUERY);
-    users.forEach(u ->
-        getFriendsIds(u.getId()).forEach(i -> u.getFriends().add(i)));
-    return users;
+    return findMany(FIND_ALL_QUERY);
   }
 
   @Override
   public Optional<User> findById(final Long id) {
-    Optional<User> userOpt = findOne(FIND_BY_ID_QUERY, id);
-    userOpt.ifPresent(user -> {
-      Set<Long> friends = getFriendsIds(user.getId());
-      user.getFriends().addAll(friends);
-    });
-    return userOpt;
+    return findOne(FIND_BY_ID_QUERY, id);
   }
 
   @Override
@@ -141,11 +146,6 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
   @Override
   public boolean isExist(final Long id) {
     return checkExistence(EXIST_QUERY, id);
-  }
-
-  private Set<Long> getFriendsIds(Long userId) {
-    log.debug("Executing findFriendsById to retrieve friends for user with id: {}", userId);
-    return new HashSet<>(jdbc.queryForList(GET_FRIENDS_ID_QUERY, Long.class, userId));
   }
 
 }

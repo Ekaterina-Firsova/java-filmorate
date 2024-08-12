@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.builder;
 
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -11,10 +10,10 @@ import ru.yandex.practicum.filmorate.model.User;
 /**
  * Utility class for preparing test data
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class TestDataBuilder {
 
-  public static User buildUser() {
+  public User buildUser() {
     return User.builder()
         .email("qwerty@gmail.com")
         .login("testUser")
@@ -23,7 +22,7 @@ public class TestDataBuilder {
         .build();
   }
 
-  public static Film buildFilm() {
+  public Film buildFilm() {
     return Film.builder()
         .name("New Film")
         .description("Some description")
@@ -33,7 +32,7 @@ public class TestDataBuilder {
         .build();
   }
 
-  public static Film buildFilmWithGenre() {
+  public Film buildFilmWithGenre() {
     final Film film = Film.builder()
         .name("Film With One Genre")
         .description("Some description")

@@ -1,15 +1,17 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.inMemory;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-@Component
+@Component("inMemoryUserStorage")
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 
@@ -45,6 +47,25 @@ public class InMemoryUserStorage implements UserStorage {
   @Override
   public void delete(final Long id) {
     users.remove(id);
+  }
+
+  @Override
+  public User addFriend(Long id, Long friendId) {
+    final User user = users.get(id);
+    user.getFriends().add(friendId);
+    return user;
+  }
+
+  @Override
+  public void removeFriend(Long id, Long friendId) {
+    users.get(id).getFriends().remove(friendId);
+  }
+
+  @Override
+  public List<User> getFriends(Long id) {
+    return users.get(id).getFriends().stream()
+        .map(users::get)
+        .toList();
   }
 
   @Override

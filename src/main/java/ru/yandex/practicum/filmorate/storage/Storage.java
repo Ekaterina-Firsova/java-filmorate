@@ -1,14 +1,11 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import java.util.Collection;
-import java.util.Optional;
-
 /**
  * Interface for generic CRUD operations on a storage data for a specific type.
  *
  * @param <T> the type of the entity to handle
  */
-public interface Storage<T> {
+public interface Storage<T> extends ReadOnlyStorage<T> {
 
   /**
    * Saves an entity.
@@ -17,21 +14,6 @@ public interface Storage<T> {
    * @return The saved entity
    */
   T save(T t);
-
-  /**
-   * Retrieves an entity by its identifier.
-   *
-   * @param id – id the identifier of the entity, must not be null
-   * @return an Optional containing the found entity or an empty Optional if no entity is found.
-   */
-  Optional<T> findById(Long id);
-
-  /**
-   * Returns all entities.
-   *
-   * @return an Iterable containing all entities
-   */
-  Collection<T> findAll();
 
   /**
    * Updates an entity.
@@ -47,6 +29,5 @@ public interface Storage<T> {
    * @param id the identifier of the entity to be deleted, must not be null
    */
   void delete(Long id);
-
 
 }

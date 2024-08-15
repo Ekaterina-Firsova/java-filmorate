@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 /**
@@ -40,9 +40,9 @@ public class FilmController {
    * @return the added film
    */
   @PostMapping
-  public Film save(@Valid @RequestBody final Film film) {
+  public FilmDto save(@Valid @RequestBody final FilmDto film) {
     log.info("Received request POST /films with body : {}", film);
-    final Film savedFilm = filmService.save(film);
+    final FilmDto savedFilm = filmService.save(film);
     log.info("Film added successfully: {}", savedFilm);
     return savedFilm;
   }
@@ -54,10 +54,10 @@ public class FilmController {
    * @return updated film
    */
   @PutMapping
-  public Film update(@Valid @RequestBody final Film newFilm) {
-    log.info("Received request PUT /films with body: {}", newFilm);
-    final Film updatedFilm = filmService.update(newFilm);
-    log.info("Film updated successfully: {}", updatedFilm);
+  public FilmDto update(@Valid @RequestBody final FilmDto newFilm) {
+    log.info("Received request PUT /films with body: {}.", newFilm);
+    final FilmDto updatedFilm = filmService.update(newFilm);
+    log.info("Film updated successfully: {}.", updatedFilm);
     return updatedFilm;
   }
 
@@ -69,11 +69,11 @@ public class FilmController {
    * @return the updated film with a like added.
    */
   @PutMapping("/{id}/like/{userId}")
-  public Film addLike(@PathVariable("id") @NotNull final Long id,
+  public FilmDto addLike(@PathVariable("id") @NotNull final Long id,
       @PathVariable("userId") @NotNull final Long userId) {
-    log.info("Received request PUT films/{}/like/{}", id, userId);
-    final Film filmWithNewLike = filmService.addLike(id, userId);
-    log.info("Like was added to the film successfully: {}", filmWithNewLike);
+    log.info("Received request PUT films/{}/like/{}.", id, userId);
+    final FilmDto filmWithNewLike = filmService.addLike(id, userId);
+    log.info("Like was added to the film successfully: {}.", filmWithNewLike);
     return filmWithNewLike;
   }
 
@@ -83,8 +83,21 @@ public class FilmController {
    * @return a collection of all films
    */
   @GetMapping
-  public Collection<Film> getAll() {
+  public Collection<FilmDto> getAll() {
+    log.info("Received request GET /films.");
     return filmService.getAll();
+  }
+
+  /**
+   * Handles GET requests to retrieve film with specified ID.
+   *
+   * @param id The film ID to retrieve
+   * @return film data
+   */
+  @GetMapping("/{id}")
+  public FilmDto getById(@PathVariable("id") @NotNull final Long id) {
+    log.info("Received request GET /films/{}.", id);
+    return filmService.getById(id);
   }
 
 
@@ -96,9 +109,10 @@ public class FilmController {
    * @return A list of the most popular films, limited by the specified count.
    */
   @GetMapping("/popular")
-  public List<Film> getTopByLikes(@RequestParam(defaultValue = "10") @Min(1) final Integer count) {
+  public List<FilmDto> getTopByLikes(
+      @RequestParam(defaultValue = "10") @Min(1) final Integer count) {
     log.info("Received request GET /films/popular?count={}", count);
-    final List<Film> mostPopularFilms = filmService.getTopFilms(count);
+    final List<FilmDto> mostPopularFilms = filmService.getTopFilms(count);
     log.info("Returning top {} films : {}", count, mostPopularFilms);
     return mostPopularFilms;
   }
@@ -111,10 +125,10 @@ public class FilmController {
    * @return Updated film with the like removed.
    */
   @DeleteMapping("/{id}/like/{userId}")
-  public Film deleteLike(@PathVariable("id") @NotNull Long id,
+  public FilmDto deleteLike(@PathVariable("id") @NotNull Long id,
       @PathVariable("userId") @NotNull Long userId) {
     log.info("Received request DELETE /films/{}/like/{}", id, userId);
-    final Film filmWithoutLike = filmService.removeLike(id, userId);
+    final FilmDto filmWithoutLike = filmService.removeLike(id, userId);
     log.info("Like was removed successfully from the film {}", filmWithoutLike);
     return filmWithoutLike;
   }

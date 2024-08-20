@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+
 import java.time.LocalDate;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,18 +20,18 @@ import lombok.EqualsAndHashCode;
 @Builder
 public class NewUserRequest {
 
-  @NotBlank(message = "Email must not be blank.")
-  @Email(message = "Email should be correct format")
-  protected String email;
+    @NotBlank(message = "Email must not be blank.")
+    @Email(message = "Email should be correct format")
+    protected String email;
 
-  @NotBlank(message = "Login must not be blank.")
-  @Pattern(regexp = "^[^\\s]+$", message = "Login should not contain spaces.")
-  protected String login;
+    @NotBlank(message = "Login must not be blank.")
+    @Pattern(regexp = "^[^\\s]+$", message = "Login should not contain spaces.")
+    protected String login;
 
-  protected String name;
+    protected String name;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  @Past(message = "Birthday should be in the past.")
-  protected LocalDate birthday;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "Birthday should be in the past.")
+    protected LocalDate birthday;
 
 }

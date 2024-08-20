@@ -15,13 +15,13 @@ import ru.yandex.practicum.filmorate.model.Genre;
 @Builder
 public class GenreDto {
 
-  private static final int MAX_NAME_LENGTH = 100;
+    private static final int MAX_NAME_LENGTH = 100;
 
-  private long id;
+    private long id;
 
-  @NotBlank(message = "Name should not be empty or blank.")
-  @Size(max = MAX_NAME_LENGTH, message = "Genre name should not exceed "
-      + MAX_NAME_LENGTH + " characters.")
-  private String name;
+    @NotBlank(message = "Name should not be empty or blank.")
+    @Size(max = MAX_NAME_LENGTH, message = "Genre name should not exceed "
+            + MAX_NAME_LENGTH + " characters.")
+    private String name;
 
 }

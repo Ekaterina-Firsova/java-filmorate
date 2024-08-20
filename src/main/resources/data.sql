@@ -16,3 +16,9 @@ VALUES
   ('Документальный'),
   ('Боевик')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO director (name)
+VALUES
+  ('Uve Boll'),
+  ('Spilberg')
+ON CONFLICT DO NOTHING;

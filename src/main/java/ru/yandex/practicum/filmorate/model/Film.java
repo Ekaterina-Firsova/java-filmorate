@@ -75,5 +75,5 @@ public class Film {
    * film only once.
    */
   private final Set<Long> likes = new HashSet<>();
-
+  private final Set<Director> directors = new HashSet<>();
 }

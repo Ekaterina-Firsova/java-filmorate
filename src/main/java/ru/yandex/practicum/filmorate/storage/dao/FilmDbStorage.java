@@ -55,12 +55,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
              mr.NAME AS mpa_name,
              array_agg( g.ID) AS genre_id,
              array_agg( g.NAME)AS genre_name,
-             array_agg( ul.USER_ID) AS like_id
+             array_agg( ul.USER_ID) AS like_id,
+             array_agg( d.ID) AS director_id,
+             array_agg( d.NAME)AS director_name
       FROM film f
       LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
       LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
       LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
       LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       WHERE f.id = ?
       GROUP BY f.ID, mr.NAME
       """;
@@ -70,12 +74,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
             array_agg(g.ID) AS genre_id,
             array_agg(g.NAME) AS genre_name,
             array_agg(ul.USER_ID) AS like_id,
-            COUNT(DISTINCT ul.USER_ID) AS like_count
+            COUNT(DISTINCT ul.USER_ID) AS like_count,
+            array_agg( d.ID) AS director_id,
+            array_agg( d.NAME)AS director_name,=
       FROM film f
       LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
       LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
       LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
       LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       GROUP BY f.ID, mr.NAME
       ORDER BY like_count DESC
       LIMIT ?
@@ -85,12 +93,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
              mr.NAME AS mpa_name,
              array_agg( g.ID) AS genre_id,
              array_agg( g.NAME)AS genre_name,
-             array_agg( ul.USER_ID) AS like_id
+             array_agg( ul.USER_ID) AS like_id,
+             array_agg( d.ID) AS director_id,
+             array_agg( d.NAME)AS director_name
       FROM film f
       LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
       LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
       LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
       LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       GROUP BY f.ID, mr.NAME
       """;
   private static final String EXIST_QUERY = "SELECT EXISTS(SELECT 1 FROM film WHERE id = ?)";
@@ -98,6 +110,11 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   private static final String REMOVE_GENRES_QUERY = "DELETE from film_genre WHERE film_id = ?";
   private static final String REMOVE_LIKE_QUERY = "DELETE FROM user_like WHERE film_id = ? AND user_id = ?";
 
+  private static final String INSERT_DIRECTOR_QUERY = """
+      INSERT INTO director_film (director_id, film_id)
+      VALUES (?, ?)
+      """;
+  private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
 
   @Autowired
   public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper) {
@@ -118,6 +135,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     );
     film.setId(id);
     insertGenresToDb(film);
+    insertDirectorToDb(film);
     log.debug("Film saved with ID: {}.", id);
     return film;
   }
@@ -134,6 +152,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
         film.getId()
     );
     updateGenres(film);
+    updateDirector(film);
     log.debug("Film updated.");
     return film;
   }
@@ -198,4 +217,20 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     insertGenresToDb(film);
   }
 
+  private void insertDirectorToDb(final Film film) {
+    if (film.getDirectors().isEmpty()) {
+      return;
+    }
+    film.getDirectors().forEach(director ->
+            insertCompositePk(INSERT_DIRECTOR_QUERY, film.getId(), director.getId()));
+  }
+
+  private void updateDirector(final Film film) {
+    log.debug("Updating genres for film {}.", film);
+    if (film.getDirectors().isEmpty()) {
+      return;
+    }
+    delete(REMOVE_DIRECTOR_QUERY, film.getId());
+    insertDirectorToDb(film);
+  }
 }

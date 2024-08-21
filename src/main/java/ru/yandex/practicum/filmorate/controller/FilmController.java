@@ -41,6 +41,7 @@ public class FilmController {
    */
   @PostMapping
   public FilmDto save(@Valid @RequestBody final FilmDto film) {
+    System.out.println("FIlm save controller");
     log.info("Received request POST /films with body : {}", film);
     final FilmDto savedFilm = filmService.save(film);
     log.info("Film added successfully: {}", savedFilm);
@@ -131,5 +132,13 @@ public class FilmController {
     final FilmDto filmWithoutLike = filmService.removeLike(id, userId);
     log.info("Like was removed successfully from the film {}", filmWithoutLike);
     return filmWithoutLike;
+  }
+
+  @GetMapping("/director/{directorId}")
+  public List<FilmDto> getDirectorFilms(
+          @Valid @PathVariable("directorId") Long id,
+          @RequestParam String sortBy) {
+    log.info("Received request GET /director/{}?sortBy={}", id, sortBy);
+    return filmService.getDirectorFilms(id, sortBy);
   }
 }

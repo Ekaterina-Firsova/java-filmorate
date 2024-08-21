@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.exceptions;
 
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,4 +34,12 @@ public class ErrorHandler {
   public ErrorResponse handlerInternalServerException(final InternalServerException e) {
     return new ErrorResponse(e.getMessage());
   }
+
+  @ExceptionHandler
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handlerDuplicatedDataException(final DuplicateKeyException e) {
+    return new ErrorResponse(e.getMessage());
+  }
+
+
 }

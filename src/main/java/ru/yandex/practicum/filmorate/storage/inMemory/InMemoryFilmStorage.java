@@ -83,6 +83,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     return film;
   }
 
+  @Override
+  public List<Film> getDirectorFilms(Long id, String sortBy) {
+    return null;
+  }
+
   /**
    * Checks for data duplication in the collection of films. Verifies whether the given film already
    * exists in the collection of films, excluding itself if it is already present (based on ID

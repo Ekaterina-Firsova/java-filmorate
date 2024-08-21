@@ -67,7 +67,7 @@ public class FilmRowMapper implements RowMapper<Film> {
               "Error occur during FilmRowMapping - the number of director ids and names differ.");
     }
     for (int i = 0; i < directorIds.size(); i++) {
-      film.getDirectors().add(
+      film.getDirector().add(
               Director.builder()
               .id(directorIds.get(i))
               .name(directorNames.get(i))

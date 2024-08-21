@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.InvalidDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
@@ -64,6 +65,8 @@ public class FilmService implements CrudService<FilmDto> {
 
   @Override
   public FilmDto save(final FilmDto film) {
+    System.out.println("Film save Service");
+    System.out.println(film);
     log.debug("Inside save Film method");
     validateMpa(film.getMpa());
     validateGenres(film.getGenres());
@@ -156,6 +159,10 @@ public class FilmService implements CrudService<FilmDto> {
       log.warn("Validating MPA rate failed: {} does not exist in db.", mpa);
       throw new InvalidDataException("MPA rate with ID = " + mpa.getId() + "not found.");
     }
+  }
+
+  public List<FilmDto> getDirectorFilms(Long id, String sortBy) {
+    return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();
   }
 
 }

@@ -56,5 +56,5 @@ public class FilmDto {
     private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
 
     private final Set<Long> likes = new HashSet<>();
-    private final Set<Director> directors = new HashSet<>();
+    private final Set<Director> director = new HashSet<>();
 }

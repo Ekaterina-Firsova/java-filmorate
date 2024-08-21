@@ -148,4 +148,9 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
     return checkExistence(EXIST_QUERY, id);
   }
 
+  public void removeById(final Long id) {
+    log.debug("Inside 'removeById' method: removing user with id = {}", id);
+    delete(DELETE_BY_ID_QUERY, id);
+
+  }
 }

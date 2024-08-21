@@ -126,4 +126,10 @@ public class UserController {
     return userService.removeFriend(id, friendId);
   }
 
+  @DeleteMapping("/{id}")
+  public void deleteById(@PathVariable("id") @NotNull final Long id) {
+    log.info("Received request DELETE users/{}", id);
+    userService.removeById(id);
+  }
+
 }

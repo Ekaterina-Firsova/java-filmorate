@@ -119,6 +119,12 @@ public class UserService implements CrudService<UserDto> {
     return UserMapper.mapToUserDto(getUserByIdOrThrow(userId));
   }
 
+  public void removeById(final Long userId) {
+    log.debug("Deleting user with ID {} ", userId);
+    validateUserId(userId);
+    userStorage.removeById(userId);
+  }
+
   private User getUserByIdOrThrow(final Long id) {
     log.debug("Getting a user instance for ID = {} from the storage", id);
     return userStorage.findById(id)
@@ -140,5 +146,4 @@ public class UserService implements CrudService<UserDto> {
       log.debug("Property name was assigned with Login property value: {}", user.getName());
     }
   }
-
 }

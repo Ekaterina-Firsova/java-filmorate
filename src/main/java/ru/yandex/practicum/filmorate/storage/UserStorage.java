@@ -44,4 +44,5 @@ public interface UserStorage extends Storage<User> {
    */
   List<User> getFriends(Long id);
 
+  void removeById(Long userId);
 }

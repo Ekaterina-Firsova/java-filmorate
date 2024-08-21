@@ -151,7 +151,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       WHERE d.id = ?
       GROUP BY f.ID, mr.NAME
-      ORDER BY f.release_date
+      ORDER BY f.release_date DESC
       """;
   private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
 
@@ -167,12 +167,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     System.out.println(film);
     log.debug("Inside 'save' method to add a new record about film to the db: {}", film);
     final Long id = insert(
-        INSERT_QUERY,
-        film.getName(),
-        film.getDescription(),
-        Date.valueOf(film.getReleaseDate()),
-        film.getDuration(),
-        film.getMpa().getId()
+            INSERT_QUERY,
+            film.getName(),
+            film.getDescription(),
+            Date.valueOf(film.getReleaseDate()),
+            film.getDuration(),
+            film.getMpa().getId()
     );
     film.setId(id);
     insertGenresToDb(film);
@@ -185,12 +185,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   public Film update(final Film film) {
     log.debug("Inside 'update' method to change a film record with data: {}", film);
     update(UPDATE_FILM_QUERY,
-        film.getName(),
-        film.getDescription(),
-        Date.valueOf(film.getReleaseDate()),
-        film.getDuration(),
-        film.getMpa().getId(),
-        film.getId()
+            film.getName(),
+            film.getDescription(),
+            Date.valueOf(film.getReleaseDate()),
+            film.getDuration(),
+            film.getMpa().getId(),
+            film.getId()
     );
     updateGenres(film);
     updateDirector(film);
@@ -231,14 +231,14 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     log.debug("Inside 'addLike' method to save like from user {} for the film {}.", userId, filmId);
     insertCompositePk(INSERT_LIKE_QUERY, filmId, userId);
     return findById(filmId).orElseThrow(
-        () -> new NotFoundException("Film with Id = " + filmId + "not found."));
+            () -> new NotFoundException("Film with Id = " + filmId + "not found."));
   }
 
   @Override
   public Film removeLike(final Long filmId, final Long userId) {
     delete(REMOVE_LIKE_QUERY, filmId, userId);
     return findById(filmId).orElseThrow(
-        () -> new NotFoundException("Film with Id = " + filmId + "not found."));
+            () -> new NotFoundException("Film with Id = " + filmId + "not found."));
   }
 
   private void insertGenresToDb(final Film film) {
@@ -246,7 +246,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       return;
     }
     film.getGenres().forEach(genre ->
-        insertCompositePk(INSERT_GENRE_QUERY, film.getId(), genre.getId()));
+            insertCompositePk(INSERT_GENRE_QUERY, film.getId(), genre.getId()));
   }
 
   private void updateGenres(final Film film) {
@@ -260,16 +260,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
   private void insertDirectorToDb(final Film film) {
     log.debug("insert director for film {}.", film);
-    if (film.getDirector().isEmpty()) {
+    if (film.getDirectors().isEmpty()) {
       return;
     }
-    film.getDirector().forEach(director ->
+    film.getDirectors().forEach(director ->
             insertCompositePk(INSERT_DIRECTOR_QUERY, director.getId(), film.getId()));
   }
 
   private void updateDirector(final Film film) {
     log.debug("Updating director for film {}.", film);
-    if (film.getDirector().isEmpty()) {
+    if (film.getDirectors().isEmpty()) {
       return;
     }
     delete(REMOVE_DIRECTOR_QUERY, film.getId());
@@ -277,11 +277,11 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   }
 
   public List<Film> getDirectorFilms(Long id, String sortBy) {
-      return switch (sortBy) {
-          case "like" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_LIKE, id).stream().toList();
-          case "year" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_YEAR, id).stream().toList();
-          default -> throw new NotFoundException(String.format("Sorted by %s not exist", sortBy));
-      };
+    return switch (sortBy) {
+      case "likes" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_LIKE, id).stream().toList();
+      case "year" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_YEAR, id).stream().toList();
+      default -> throw new NotFoundException(String.format("Sorted by %s not exist", sortBy));
+    };
 
 
   }

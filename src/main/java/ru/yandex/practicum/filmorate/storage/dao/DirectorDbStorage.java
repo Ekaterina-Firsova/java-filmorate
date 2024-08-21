@@ -47,9 +47,11 @@ public class DirectorDbStorage extends BaseRepository<Director> implements Stora
 
     @Override
     public Director save(Director director) {
+        System.out.println(director);
 //        insert(INSERT_DIRECTOR_QUERY, director.getId(), director.getName());
         Long id = insert(INSERT_DIRECTOR_QUERY, director.getName());
         director.setId(id);
+        System.out.println(director);
         return director;
     }
 

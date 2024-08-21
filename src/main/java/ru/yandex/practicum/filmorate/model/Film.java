@@ -48,7 +48,7 @@ public class Film {
    * 1895.
    */
   @NotNull(message = "ReleaseDate should not be null.")
-  @PastOrPresent(message = "Release date should not be in future.")
+//  @PastOrPresent(message = "Release date should not be in future.")
   @DateAfter(after = MIN_DATE, message = "Release date should not be before " + MIN_DATE)
   private LocalDate releaseDate;
 
@@ -75,5 +75,5 @@ public class Film {
    * film only once.
    */
   private final Set<Long> likes = new HashSet<>();
-  private final Set<Director> director = new HashSet<>();
+  private final Set<Director> directors = new HashSet<>();
 }

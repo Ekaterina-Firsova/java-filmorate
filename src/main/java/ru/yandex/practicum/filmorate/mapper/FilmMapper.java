@@ -21,7 +21,7 @@ public class FilmMapper {
         .build();
     filmDto.getGenres().forEach(genreId -> film.getGenres().add(genreId));
     filmDto.getLikes().forEach(userId -> film.getLikes().add(userId));
-    filmDto.getDirector().forEach(director -> film.getDirector().add(director));
+    filmDto.getDirectors().forEach(director -> film.getDirectors().add(director));
 //    filmDto.getDirector().addAll(film.getDirector());
     return film;
   }
@@ -37,7 +37,7 @@ public class FilmMapper {
         .build();
     film.getGenres().forEach(genreId -> filmDto.getGenres().add(genreId));
     film.getLikes().forEach(userId -> filmDto.getLikes().add(userId));
-    film.getDirector().forEach(director -> filmDto.getDirector().add(director));
+    film.getDirectors().forEach(director -> filmDto.getDirectors().add(director));
 //    film.getDirector().addAll(filmDto.getDirector());
     return filmDto;
 

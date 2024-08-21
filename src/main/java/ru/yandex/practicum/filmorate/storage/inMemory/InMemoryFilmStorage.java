@@ -83,6 +83,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     return film;
   }
 
+  @Override
+  public void removeById(Long id) {
+
+  }
+
   /**
    * Checks for data duplication in the collection of films. Verifies whether the given film already
    * exists in the collection of films, excluding itself if it is already present (based on ID

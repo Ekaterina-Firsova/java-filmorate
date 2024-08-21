@@ -132,4 +132,11 @@ public class FilmController {
     log.info("Like was removed successfully from the film {}", filmWithoutLike);
     return filmWithoutLike;
   }
+
+  @DeleteMapping("/{id}")
+  public void deleteById(@PathVariable("id") @NotNull final Long id) {
+    log.info("Received request DELETE film/{}", id);
+    filmService.removeById(id);
+  }
+
 }

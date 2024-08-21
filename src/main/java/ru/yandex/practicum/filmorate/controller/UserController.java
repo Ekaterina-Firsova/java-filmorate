@@ -128,7 +128,7 @@ public class UserController {
 
   @DeleteMapping("/{id}")
   public void deleteById(@PathVariable("id") @NotNull final Long id) {
-    log.info("Received request DELETE users/{}", id);
+    log.info("Received request DELETE user/{}", id);
     userService.removeById(id);
   }
 

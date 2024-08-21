@@ -44,4 +44,5 @@ public interface FilmStorage extends Storage<Film> {
    */
   Film removeLike(Long filmId, Long userId);
 
+    void removeById(Long id);
 }

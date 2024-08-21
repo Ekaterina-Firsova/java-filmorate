@@ -97,8 +97,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   private static final String DELETE_BY_ID_QUERY = "DELETE FROM film WHERE id =?";
   private static final String REMOVE_GENRES_QUERY = "DELETE from film_genre WHERE film_id = ?";
   private static final String REMOVE_LIKE_QUERY = "DELETE FROM user_like WHERE film_id = ? AND user_id = ?";
-  private static final String REMOVE_All_LIKES_FOR_FILM_QUERY = "DELETE FROM user_like WHERE film_id = ?";
-
 
   @Autowired
   public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper) {
@@ -186,8 +184,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   public void removeById(Long id) {
     log.debug("Inside 'removeById' method: removing film with id = {}", id);
     delete(DELETE_BY_ID_QUERY, id);
-    log.debug("Inside 'removeById' method: removing film's likes");
-    delete(REMOVE_All_LIKES_FOR_FILM_QUERY, id);
   }
 
 

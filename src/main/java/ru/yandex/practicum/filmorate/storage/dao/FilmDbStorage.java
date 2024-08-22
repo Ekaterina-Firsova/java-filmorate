@@ -98,7 +98,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   private static final String REMOVE_GENRES_QUERY = "DELETE from film_genre WHERE film_id = ?";
   private static final String REMOVE_LIKE_QUERY = "DELETE FROM user_like WHERE film_id = ? AND user_id = ?";
 
-
   @Autowired
   public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper) {
     super(jdbc, mapper);

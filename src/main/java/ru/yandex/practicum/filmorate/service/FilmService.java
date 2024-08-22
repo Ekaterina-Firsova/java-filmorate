@@ -158,4 +158,8 @@ public class FilmService implements CrudService<FilmDto> {
     }
   }
 
+    public void removeById(Long id) {
+      log.debug("Deleting film with ID {} ", id);
+      filmStorage.delete(id);
+    }
 }

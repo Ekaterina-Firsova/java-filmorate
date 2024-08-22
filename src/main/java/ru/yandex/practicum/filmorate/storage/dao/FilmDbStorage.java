@@ -180,13 +180,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
         () -> new NotFoundException("Film with Id = " + filmId + "not found."));
   }
 
-  @Override
-  public void removeById(Long id) {
-    log.debug("Inside 'removeById' method: removing film with id = {}", id);
-    delete(DELETE_BY_ID_QUERY, id);
-  }
-
-
   private void insertGenresToDb(final Film film) {
     if (film.getGenres().isEmpty()) {
       return;

@@ -43,6 +43,4 @@ public interface FilmStorage extends Storage<Film> {
    * @throws NotFoundException if the film or user does not exist.
    */
   Film removeLike(Long filmId, Long userId);
-
-    void removeById(Long id);
 }

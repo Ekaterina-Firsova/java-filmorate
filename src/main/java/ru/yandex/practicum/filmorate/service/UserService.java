@@ -123,7 +123,7 @@ public class UserService implements CrudService<UserDto> {
     public void removeById(final Long userId) {
         log.debug("Deleting user with ID {} ", userId);
         validateUserId(userId);
-        userStorage.removeById(userId);
+        userStorage.delete(userId);
     }
 
     public User getUserByIdOrThrow(final Long id) {

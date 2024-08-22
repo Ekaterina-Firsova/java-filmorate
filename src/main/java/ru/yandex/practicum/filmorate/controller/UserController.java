@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
 
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -130,14 +132,14 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable("id") @NotNull final Long id) {
+    public void deleteById(@PathVariable final Long id) {
         log.info("Received request DELETE user/{}", id);
         userService.removeById(id);
     }
 
-    @GetMapping("{id}")
-    public User getUserById(@PathVariable long id) {
-        return userService.getUserByIdOrThrow(id);
+    @GetMapping("/{id}")
+    public UserDto getUserById(@PathVariable final long id) {
+        log.info("Received request GET user/{}", id);
+        return UserMapper.mapToUserDto(userService.getUserByIdOrThrow(id));
     }
-
 }

@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exceptions.InvalidDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
@@ -65,8 +65,6 @@ public class FilmService implements CrudService<FilmDto> {
 
   @Override
   public FilmDto save(final FilmDto film) {
-    System.out.println("Film save Service");
-    System.out.println(film);
     log.debug("Inside save Film method");
     validateMpa(film.getMpa());
     validateGenres(film.getGenres());
@@ -161,8 +159,7 @@ public class FilmService implements CrudService<FilmDto> {
     }
   }
 
-  public List<FilmDto> getDirectorFilms(Long id, String sortBy) {
+  public List<FilmDto> getDirectorFilms(final Long id, final String sortBy) {
     return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();
   }
-
 }

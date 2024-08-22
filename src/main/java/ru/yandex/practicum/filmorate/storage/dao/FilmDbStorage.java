@@ -109,10 +109,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   private static final String DELETE_BY_ID_QUERY = "DELETE FROM film WHERE id =?";
   private static final String REMOVE_GENRES_QUERY = "DELETE from film_genre WHERE film_id = ?";
   private static final String REMOVE_LIKE_QUERY = "DELETE FROM user_like WHERE film_id = ? AND user_id = ?";
-  private static final String INSERT_DIRECTOR_QUERY = """
-      INSERT INTO director_film (director_id, film_id)
-      VALUES (?, ?)
-      """;
+  private static final String INSERT_DIRECTOR_QUERY = "INSERT INTO director_film (director_id, film_id) VALUES (?, ?)";
   private static final String SELECT_ALL_DIRECTORS_FILM_BY_LIKE = """
       SELECT f.*,
              mr.NAME AS mpa_name,
@@ -133,7 +130,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       GROUP BY f.ID, mr.NAME
       ORDER BY like_count DESC
       """;
-
   private static final String SELECT_ALL_DIRECTORS_FILM_BY_YEAR = """
       SELECT f.*,
              mr.NAME AS mpa_name,
@@ -151,7 +147,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       WHERE d.id = ?
       GROUP BY f.ID, mr.NAME
-      ORDER BY f.release_date DESC
+      ORDER BY f.release_date
       """;
   private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
 
@@ -163,8 +159,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
   @Override
   public Film save(final Film film) {
-    System.out.println("Film save Storage");
-    System.out.println(film);
     log.debug("Inside 'save' method to add a new record about film to the db: {}", film);
     final Long id = insert(
             INSERT_QUERY,
@@ -268,7 +262,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   }
 
   private void updateDirector(final Film film) {
-    log.debug("Updating director for film {}.", film);
+    log.info("Updating director for film {}.", film);
     if (film.getDirectors().isEmpty()) {
       return;
     }
@@ -276,13 +270,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     insertDirectorToDb(film);
   }
 
-  public List<Film> getDirectorFilms(Long id, String sortBy) {
+  public List<Film> getDirectorFilms(final Long id, final String sortBy) {
+    log.info("Get director's film with ID - {}, sorted by - {}", id, sortBy);
     return switch (sortBy) {
       case "likes" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_LIKE, id).stream().toList();
       case "year" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_YEAR, id).stream().toList();
       default -> throw new NotFoundException(String.format("Sorted by %s not exist", sortBy));
     };
-
-
   }
 }

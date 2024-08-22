@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -42,7 +41,6 @@ public class FilmDto {
     private String description;
 
     @NotNull(message = "ReleaseDate should not be null.")
-//    @PastOrPresent(message = "Release date should not be in future.")
     @DateAfter(after = MIN_DATE, message = "Release date should not be before " + MIN_DATE)
     private LocalDate releaseDate;
 

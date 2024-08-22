@@ -38,13 +38,13 @@ public class DirectorController {
     }
 
     @PostMapping
-    public DirectorDto save(@Validated @RequestBody Director director) {
+    public DirectorDto save(@Validated @RequestBody final Director director) {
         log.info("Received POST /directors - {}", director);
         return service.save(director);
     }
 
     @PutMapping
-    public DirectorDto update(@Validated @RequestBody Director director) {
+    public DirectorDto update(@Validated @RequestBody final Director director) {
         log.info("Received PUT /directors - {}", director);
         return service.update(director);
     }

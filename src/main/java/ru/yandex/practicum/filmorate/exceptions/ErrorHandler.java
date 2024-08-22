@@ -40,6 +40,4 @@ public class ErrorHandler {
   public ErrorResponse handlerDuplicatedDataException(final DuplicateKeyException e) {
     return new ErrorResponse(e.getMessage());
   }
-
-
 }

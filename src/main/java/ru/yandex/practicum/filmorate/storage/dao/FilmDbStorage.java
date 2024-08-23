@@ -278,6 +278,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       default -> throw new NotFoundException(String.format("Sorted by %s not exist", sortBy));
     };
   }
+
   @Override
   public Collection<Film> getRecommendedFilms(Long userId, Long similarUserId) {
     String query = """
@@ -300,6 +301,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
                   WHERE ul2.user_id IS NULL
                   GROUP BY f.ID, mr.NAME;
             """;
+
     return findMany(query, similarUserId, userId);
   }
 

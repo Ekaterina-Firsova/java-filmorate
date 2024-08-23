@@ -1,5 +1,4 @@
 package ru.yandex.practicum.filmorate.model;
 
-public record ErrorResponse(String description) {
-
+public record ErrorResponse(String error) {
 }

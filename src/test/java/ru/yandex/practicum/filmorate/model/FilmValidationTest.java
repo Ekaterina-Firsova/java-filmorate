@@ -130,7 +130,7 @@ class FilmValidationTest {
         new ArrayList<>(
             Arrays.asList("Name should not be empty.", "ReleaseDate should not be null.","Duration should not be null.","MPA rate should not be null.")),
         new ArrayList<>(
-            Arrays.asList("Name should not be empty.", "Release date should not be in future.",
+            Arrays.asList("Name should not be empty.", "Release date should not be before 1895-12-28",
                 "Duration must be a positive number.")),
         new ArrayList<>(Arrays.asList("Name should not be empty.",
             "Description should not exceed 200 characters.",
@@ -139,7 +139,7 @@ class FilmValidationTest {
     final List<Film> filmsToValidate = List.of(
         Film.builder().build(),
         Film.builder().name("")
-            .releaseDate(LocalDate.now().plusDays(1)).duration(0L).mpa(new MpaRating(1L,"G")).build(),
+            .releaseDate(MIN_DATE.minusDays(1)).duration(0L).mpa(new MpaRating(1L,"G")).build(),
         Film.builder().name("  ").description(generateStringOfLength(201))
             .releaseDate(MIN_DATE.minusDays(1)).duration(-1L).mpa(new MpaRating(1L,"G")).build());
 

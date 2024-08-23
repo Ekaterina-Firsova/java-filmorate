@@ -141,4 +141,11 @@ public class FilmController {
         filmService.removeById(id);
     }
 
+    @GetMapping("/director/{directorId}")
+    public List<FilmDto> getDirectorFilms(
+            @PathVariable("directorId") @NotNull final Long id,
+            @RequestParam final String sortBy) {
+        log.info("Received request GET /director/{}?sortBy={}", id, sortBy);
+        return filmService.getDirectorFilms(id, sortBy);
+    }
 }

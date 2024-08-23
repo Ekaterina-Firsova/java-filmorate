@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import java.util.List;
+
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
@@ -43,4 +44,6 @@ public interface FilmStorage extends Storage<Film> {
    * @throws NotFoundException if the film or user does not exist.
    */
   Film removeLike(Long filmId, Long userId);
+
+  List<Film> getDirectorFilms(Long id, String sortBy);
 }

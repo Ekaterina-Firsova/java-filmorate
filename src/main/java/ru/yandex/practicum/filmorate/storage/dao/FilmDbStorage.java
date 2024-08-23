@@ -55,12 +55,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
              mr.NAME AS mpa_name,
              array_agg( g.ID) AS genre_id,
              array_agg( g.NAME)AS genre_name,
-             array_agg( ul.USER_ID) AS like_id
+             array_agg( ul.USER_ID) AS like_id,
+             array_agg( d.ID) AS director_id,
+             array_agg( d.NAME)AS director_name
       FROM film f
       LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
       LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
       LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
       LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       WHERE f.id = ?
       GROUP BY f.ID, mr.NAME
       """;
@@ -70,12 +74,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
             array_agg(g.ID) AS genre_id,
             array_agg(g.NAME) AS genre_name,
             array_agg(ul.USER_ID) AS like_id,
+            array_agg( d.ID) AS director_id,
+            array_agg( d.NAME)AS director_name,
             COUNT(DISTINCT ul.USER_ID) AS like_count
       FROM film f
       LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
       LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
       LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
       LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       GROUP BY f.ID, mr.NAME
       ORDER BY like_count DESC
       LIMIT ?
@@ -85,18 +93,63 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
              mr.NAME AS mpa_name,
              array_agg( g.ID) AS genre_id,
              array_agg( g.NAME)AS genre_name,
-             array_agg( ul.USER_ID) AS like_id
+             array_agg( ul.USER_ID) AS like_id,
+             array_agg( d.ID) AS director_id,
+             array_agg( d.NAME)AS director_name
       FROM film f
       LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
       LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
       LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
       LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
       GROUP BY f.ID, mr.NAME
       """;
   private static final String EXIST_QUERY = "SELECT EXISTS(SELECT 1 FROM film WHERE id = ?)";
   private static final String DELETE_BY_ID_QUERY = "DELETE FROM film WHERE id =?";
   private static final String REMOVE_GENRES_QUERY = "DELETE from film_genre WHERE film_id = ?";
   private static final String REMOVE_LIKE_QUERY = "DELETE FROM user_like WHERE film_id = ? AND user_id = ?";
+  private static final String INSERT_DIRECTOR_QUERY = "INSERT INTO director_film (director_id, film_id) VALUES (?, ?)";
+  private static final String SELECT_ALL_DIRECTORS_FILM_BY_LIKE = """
+      SELECT f.*,
+             mr.NAME AS mpa_name,
+             array_agg( g.ID) AS genre_id,
+             array_agg( g.NAME)AS genre_name,
+             array_agg( ul.USER_ID) AS like_id,
+             array_agg( d.ID) AS director_id,
+             array_agg( d.NAME)AS director_name,
+             COUNT(DISTINCT ul.USER_ID) AS like_count
+      FROM film f
+      LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
+      LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
+      LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
+      LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
+      WHERE d.ID = ?
+      GROUP BY f.ID, mr.NAME
+      ORDER BY like_count DESC
+      """;
+  private static final String SELECT_ALL_DIRECTORS_FILM_BY_YEAR = """
+      SELECT f.*,
+             mr.NAME AS mpa_name,
+             array_agg( g.ID) AS genre_id,
+             array_agg( g.NAME)AS genre_name,
+             array_agg( ul.USER_ID) AS like_id,
+             array_agg( d.ID) AS director_id,
+             array_agg( d.NAME)AS director_name
+      FROM film f
+      LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
+      LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
+      LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
+      LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
+      WHERE d.id = ?
+      GROUP BY f.ID, mr.NAME
+      ORDER BY f.release_date
+      """;
+  private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
 
   @Autowired
   public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper) {
@@ -108,15 +161,16 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   public Film save(final Film film) {
     log.debug("Inside 'save' method to add a new record about film to the db: {}", film);
     final Long id = insert(
-        INSERT_QUERY,
-        film.getName(),
-        film.getDescription(),
-        Date.valueOf(film.getReleaseDate()),
-        film.getDuration(),
-        film.getMpa().getId()
+            INSERT_QUERY,
+            film.getName(),
+            film.getDescription(),
+            Date.valueOf(film.getReleaseDate()),
+            film.getDuration(),
+            film.getMpa().getId()
     );
     film.setId(id);
     insertGenresToDb(film);
+    insertDirectorToDb(film);
     log.debug("Film saved with ID: {}.", id);
     return film;
   }
@@ -125,14 +179,15 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   public Film update(final Film film) {
     log.debug("Inside 'update' method to change a film record with data: {}", film);
     update(UPDATE_FILM_QUERY,
-        film.getName(),
-        film.getDescription(),
-        Date.valueOf(film.getReleaseDate()),
-        film.getDuration(),
-        film.getMpa().getId(),
-        film.getId()
+            film.getName(),
+            film.getDescription(),
+            Date.valueOf(film.getReleaseDate()),
+            film.getDuration(),
+            film.getMpa().getId(),
+            film.getId()
     );
     updateGenres(film);
+    updateDirector(film);
     log.debug("Film updated.");
     return film;
   }
@@ -170,14 +225,14 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     log.debug("Inside 'addLike' method to save like from user {} for the film {}.", userId, filmId);
     insertCompositePk(INSERT_LIKE_QUERY, filmId, userId);
     return findById(filmId).orElseThrow(
-        () -> new NotFoundException("Film with Id = " + filmId + "not found."));
+            () -> new NotFoundException("Film with Id = " + filmId + "not found."));
   }
 
   @Override
   public Film removeLike(final Long filmId, final Long userId) {
     delete(REMOVE_LIKE_QUERY, filmId, userId);
     return findById(filmId).orElseThrow(
-        () -> new NotFoundException("Film with Id = " + filmId + "not found."));
+            () -> new NotFoundException("Film with Id = " + filmId + "not found."));
   }
 
   private void insertGenresToDb(final Film film) {
@@ -185,7 +240,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       return;
     }
     film.getGenres().forEach(genre ->
-        insertCompositePk(INSERT_GENRE_QUERY, film.getId(), genre.getId()));
+            insertCompositePk(INSERT_GENRE_QUERY, film.getId(), genre.getId()));
   }
 
   private void updateGenres(final Film film) {
@@ -197,4 +252,30 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     insertGenresToDb(film);
   }
 
+  private void insertDirectorToDb(final Film film) {
+    log.debug("insert director for film {}.", film);
+    if (film.getDirectors().isEmpty()) {
+      return;
+    }
+    film.getDirectors().forEach(director ->
+            insertCompositePk(INSERT_DIRECTOR_QUERY, director.getId(), film.getId()));
+  }
+
+  private void updateDirector(final Film film) {
+    log.info("Updating director for film {}.", film);
+    if (film.getDirectors().isEmpty()) {
+      return;
+    }
+    delete(REMOVE_DIRECTOR_QUERY, film.getId());
+    insertDirectorToDb(film);
+  }
+
+  public List<Film> getDirectorFilms(final Long id, final String sortBy) {
+    log.info("Get director's film with ID - {}, sorted by - {}", id, sortBy);
+    return switch (sortBy) {
+      case "likes" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_LIKE, id).stream().toList();
+      case "year" -> findMany(SELECT_ALL_DIRECTORS_FILM_BY_YEAR, id).stream().toList();
+      default -> throw new NotFoundException(String.format("Sorted by %s not exist", sortBy));
+    };
+  }
 }

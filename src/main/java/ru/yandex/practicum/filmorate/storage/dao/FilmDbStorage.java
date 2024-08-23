@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -151,9 +155,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       """;
   private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
 
+  private final GenreDbStorage genreStorage;
+
   @Autowired
-  public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper) {
+  public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper, GenreDbStorage genreStorage) {
     super(jdbc, mapper);
+    this.genreStorage = genreStorage;
   }
 
 
@@ -215,9 +222,13 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   }
 
   @Override
-  public List<Film> getTopFilms(final int count) {
+  public List<Film> getTopFilms(final int count, final Long genreId, final Integer year) {
     log.debug("Inside 'getTopFilms' method to get a list of top {} liked films.", count);
-    return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream().toList();
+    return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream()
+            .filter(film -> genreId == null || film.getGenres().contains(genreStorage.findById(genreId).get()))
+            .filter(film -> year == null || film.getReleaseDate().getYear() == year)
+            .sorted(Comparator.comparing(film -> film.getLikes().size(), Comparator.reverseOrder()))
+            .toList();
   }
 
   @Override

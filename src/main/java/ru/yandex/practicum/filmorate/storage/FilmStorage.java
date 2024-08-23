@@ -23,7 +23,7 @@ public interface FilmStorage extends Storage<Film> {
    * @param count the maximum number of top films to retrieve.
    * @return a list of {@link Film} representing the top-rated films.
    */
-  List<Film> getTopFilms(int count);
+  List<Film> getTopFilms(int count, Long genreId, Integer year);
 
   /**
    * Adds a like from a user to a specified film.

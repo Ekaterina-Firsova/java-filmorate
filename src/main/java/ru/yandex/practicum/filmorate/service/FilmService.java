@@ -95,10 +95,9 @@ public class FilmService implements CrudService<FilmDto> {
     return FilmMapper.mapToFilmDto(getFilmOrThrow(id));
   }
 
-  public List<FilmDto> getTopFilms(final int count) {
+  public List<FilmDto> getTopFilms(final int count, final Long genreId, final Integer year) {
     log.debug("Inside the getTopFilms to get top {} films", count);
-    return filmStorage.getTopFilms(count).stream().map(FilmMapper::mapToFilmDto).toList();
-
+    return filmStorage.getTopFilms(count, genreId, year).stream().map(FilmMapper::mapToFilmDto).toList();
   }
 
   public FilmDto addLike(final Long filmId, final Long userId) {

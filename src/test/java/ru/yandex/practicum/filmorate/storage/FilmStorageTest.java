@@ -181,7 +181,7 @@ public class FilmStorageTest {
   public void getTopFilmsWithTheMostLikesCount() {
     final int count = 4;
 
-    final List<Film> topFilms = filmStorage.getTopFilms(count);
+    final List<Film> topFilms = filmStorage.getTopFilms(count, 1L, 1);
 
     System.out.println(topFilms);
     assertThat(topFilms)

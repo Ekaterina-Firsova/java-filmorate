@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import java.util.Collection;
 import java.util.List;
 
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
@@ -46,4 +47,6 @@ public interface FilmStorage extends Storage<Film> {
   Film removeLike(Long filmId, Long userId);
 
   List<Film> getDirectorFilms(Long id, String sortBy);
+
+  Collection<Film> getRecommendedFilms(Long userId, Long similarUserId);
 }

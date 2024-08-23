@@ -278,4 +278,29 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       default -> throw new NotFoundException(String.format("Sorted by %s not exist", sortBy));
     };
   }
+  @Override
+  public Collection<Film> getRecommendedFilms(Long userId, Long similarUserId) {
+    String query = """
+                  SELECT f.*,
+                         mr.NAME AS mpa_name,
+                         array_agg( g.ID) AS genre_id,
+                         array_agg( g.NAME)AS genre_name,
+                         array_agg( ul.USER_ID) AS like_id,
+                         array_agg( d.ID) AS director_id,
+                         array_agg( d.NAME)AS director_name
+                  FROM film f
+                  JOIN user_like ul1 ON f.id = ul1.film_id AND ul1.user_id = ?
+                  LEFT JOIN user_like ul2 ON f.id = ul2.film_id AND ul2.user_id =?
+                  LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
+                  LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
+                  LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
+                  LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+                  LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+                  LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
+                  WHERE ul2.user_id IS NULL
+                  GROUP BY f.ID, mr.NAME;
+            """;
+    return findMany(query, similarUserId, userId);
+  }
+
 }

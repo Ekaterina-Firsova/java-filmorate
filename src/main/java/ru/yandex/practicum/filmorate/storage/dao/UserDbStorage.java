@@ -153,4 +153,20 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
         log.debug("Inside 'removeById' method: removing user with id = {}", id);
         delete(DELETE_BY_ID_QUERY, id);
     }
+
+    @Override
+    public Long getSimilarUser(Long userId) {
+        Optional<User> similarUser = findOne(
+                "SELECT u.* " +
+                        "FROM user_like u1 " +
+                        "JOIN user_like u2 ON u1.film_id = u2.film_id AND u1.user_id <> u2.user_id " +
+                        "JOIN \"user\" u ON u2.user_id = u.id " +
+                        "WHERE u1.user_id = ?" +
+                        "GROUP BY u2.user_id " +
+                        "ORDER BY COUNT(*) DESC " +
+                        "LIMIT 1", userId);
+
+        return similarUser.map(User::getId).orElse(null);
+    }
+
 }

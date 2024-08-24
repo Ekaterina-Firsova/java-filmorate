@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -139,5 +140,11 @@ public class UserController {
     public UserDto getUserById(@PathVariable final long id) {
         log.info("Received request GET user/{}", id);
         return UserMapper.mapToUserDto(userService.getUserByIdOrThrow(id));
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<FilmDto> getUserRecommendations(@PathVariable final long id) {
+        log.info("Received request GET user/{}/recommendations", id);
+        return userService.getUserRecommendations(id);
     }
 }

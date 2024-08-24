@@ -4,15 +4,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 /**
@@ -41,10 +46,13 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 public class UserService implements CrudService<UserDto> {
 
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") final UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") final UserStorage userStorage,
+                       @Qualifier("filmDbStorage") final FilmStorage filmStorage) {
         this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -147,4 +155,18 @@ public class UserService implements CrudService<UserDto> {
             log.debug("Property name was assigned with Login property value: {}", user.getName());
         }
     }
+
+    public Collection<FilmDto> getUserRecommendations(final long userId) {
+        log.debug("Getting recommendations films for user with ID = {}", userId);
+        validateUserId(userId);
+        Long similarUserId = userStorage.getSimilarUser(userId);
+        if (similarUserId == null) {
+            return List.of();
+        }
+        Collection<Film> films = filmStorage.getRecommendedFilms(userId, similarUserId);
+        return films.stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -44,4 +44,6 @@ public interface UserStorage extends Storage<User> {
      * @throws NotFoundException if the user does not exist.
      */
     List<User> getFriends(Long id);
+
+    Long getSimilarUser(Long userId);
 }

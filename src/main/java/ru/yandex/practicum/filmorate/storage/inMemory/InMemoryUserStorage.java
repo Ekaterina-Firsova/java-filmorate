@@ -69,6 +69,11 @@ public class InMemoryUserStorage implements UserStorage {
   }
 
   @Override
+  public Long getSimilarUser(Long userId) {
+    return 0L;
+  }
+
+  @Override
   public boolean isExist(Long id) {
     return users.get(id) != null;
   }

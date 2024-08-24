@@ -20,6 +20,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.SearchCriteria;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
@@ -179,10 +180,10 @@ public class FilmService implements CrudService<FilmDto> {
     }
   }
 
-  public void removeById(Long id) {
-    log.debug("Deleting film with ID {} ", id);
-    filmStorage.delete(id);
-  }
+    public void removeById(Long id) {
+      log.debug("Deleting film with ID {} ", id);
+      filmStorage.delete(id);
+    }
 
   public List<FilmDto> getDirectorFilms(final Long id, final String sortBy) {
     return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();

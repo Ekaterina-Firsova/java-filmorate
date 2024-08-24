@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,6 +45,8 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #getFeed(Long)}: Retrieves a list of events related to the user.</li>
  * <li>{@link #getUserRecommendations(long)}: Retrieves recommendations for a user based on their preferences and interactions.</li>
  * <li>{@link #validateUserId(Long)}: validated if user with given id exists in the DB, throws exception if not.</li>
+ * <li>{@link #removeById(Long)}: Removes a user by their ID.</li>
+ * <li>{@link #getFeed(Long)}: Retrieves a list of events related to the user.</li>
  * </ul>
  *
  * @see User

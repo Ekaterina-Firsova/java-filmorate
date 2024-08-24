@@ -120,6 +120,36 @@ Each film can have one MPA rating, but each MPA rating can be associated with ma
 
 </details>
 
+<details>
+<summary>Reviews</summary>
+
+The `Reviews` table holds users personal reviews information about film.
+
+| Column      | Type    | Constraints      | Notes                                    |
+|-------------|---------|------------------|------------------------------------------|
+| review_id   | bigint  | PK               | unique identification for reviews        |   
+| content     | varchar | max length: 255  | reviews description                      |
+| is_positive | boolean | not null         | film description                         |
+| user_id     | bigint  | PK, FK(user.id)  | part of composite PK, references user ID |
+| film_id     | bigint  | PK, FK(film.id)  | part of composite PK, references film ID |
+| useful      | integer | default value: 0 | score useful review                      |
+
+</details>
+
+<details>
+<summary>Review_Likes</summary>
+
+The `Reviews_like` represents the reviews liked by users. The table contains 
+field `is_useful` for definition useful score into `Reviews` table only once for 
+each user with possibility change score useful.
+
+| Column     | Type    | Constraints                | Notes                                              |
+|------------|---------|----------------------------|----------------------------------------------------|
+| review_id  | bigint  | PK, FK(reviews.review_id ) | part of composite PK, references reviews REVIEW_ID |
+| user_id    | bigint  | PK, FK(users.id)           | part of composite PK, references user ID           | 
+| is_useful  | boolean | not null                   | flag useful review affect on `useful` scope        |
+</details>
+
 ***  
 
 [^1]: [Peer Review Link](https://github.com/natalaly/er-diagram-filmorate/pull/1)

@@ -10,11 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -223,12 +220,13 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
 
   @Override
   public List<Film> getTopFilms(final int count, final Long genreId, final Integer year) {
-    log.debug("Inside 'getTopFilms' method to get a list of top {} liked films.", count);
-    return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream()
-            .filter(film -> genreId == null || film.getGenres().contains(genreStorage.findById(genreId).get()))
-            .filter(film -> year == null || film.getReleaseDate().getYear() == year)
-            .sorted(Comparator.comparing(film -> film.getLikes().size(), Comparator.reverseOrder()))
-            .toList();
+      log.debug("Getting top {} liked films.", count);
+      return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream()
+              .sorted(Comparator.comparing(film -> film.getLikes().size(), Comparator.reverseOrder()))
+              .filter(film -> genreId == null || film.getGenres()
+                      .contains(genreStorage.findById(genreId).orElse(null)))
+              .filter(film -> year == null || film.getReleaseDate().getYear() == year)
+              .toList();
   }
 
   @Override

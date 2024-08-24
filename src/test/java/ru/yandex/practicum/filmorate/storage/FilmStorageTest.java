@@ -177,11 +177,11 @@ public class FilmStorageTest {
    * <li>Film(id=4) - has 4 likes [1,2,3,4] </li>
    */
   @Test
-  @DisplayName("getTopFilms(Long) - returns top N amount the most liked by users films.")
-  public void getTopFilmsWithTheMostLikesCount() {
+  @DisplayName("getTopFilms(Long, null, null) - returns top N amount the most liked by users films.")
+  public void getTopFilmsWithTheMostLikesCountWhenGenreAndYearIsNull() {
     final int count = 4;
 
-    final List<Film> topFilms = filmStorage.getTopFilms(count, 1L, 1);
+    final List<Film> topFilms = filmStorage.getTopFilms(count, null, null);
 
     System.out.println(topFilms);
     assertThat(topFilms)
@@ -193,4 +193,52 @@ public class FilmStorageTest {
 
   }
 
+    @Test
+    @DisplayName("getTopFilms(Long, Long, null) - returns top N amount the most liked by users films, filter in genre.")
+    public void getTopFilmsWithTheMostLikesCountWhenYearIsNull() {
+        final int count = 4;
+
+        final List<Film> topFilms = filmStorage.getTopFilms(count, 2L, null);
+
+        System.out.println(topFilms);
+        assertThat(topFilms)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1)
+                .extracting("id")
+                .containsExactly(2L);
+    }
+
+    @Test
+    @DisplayName("getTopFilms(Long, null, Integer) - returns top N amount the most liked by users films, filter in year.")
+    public void getTopFilmsWithTheMostLikesCountWhenGenreIsNull() {
+        final int count = 4;
+
+        final List<Film> topFilms = filmStorage.getTopFilms(count, null, 2024);
+
+        System.out.println(topFilms);
+        assertThat(topFilms)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(2)
+                .extracting("id")
+                .containsExactly(4L, 3L);
+    }
+
+    @Test
+    @DisplayName("getTopFilms(Long, Long, Integer) - returns top N amount the most liked by users films," +
+            " filter in year and genre.")
+    public void getTopFilmsWithTheMostLikesCount() {
+        final int count = 4;
+
+        final List<Film> topFilms = filmStorage.getTopFilms(count, 6L, 2024);
+
+        System.out.println(topFilms);
+        assertThat(topFilms)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(1)
+                .extracting("id")
+                .containsExactly(4L);
+    }
 }

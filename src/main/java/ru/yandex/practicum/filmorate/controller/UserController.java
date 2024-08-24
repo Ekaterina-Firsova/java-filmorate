@@ -2,10 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.Positive;
 import java.util.Collection;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.EventDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 /**
@@ -33,74 +32,74 @@ import ru.yandex.practicum.filmorate.service.UserService;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    /**
-     * Handles POST requests to add a new user.
-     *
-     * @param user - the user to be added
-     * @return the added user
-     */
-    @PostMapping
-    public UserDto save(@Valid @RequestBody final UserDto user) {
-        log.info("Received request POST /users with body: {}", user);
-        final UserDto savedUser = userService.save(user);
-        log.info("User successfully added: {}", savedUser);
-        return savedUser;
-    }
+  /**
+   * Handles POST requests to add a new user.
+   *
+   * @param user - the user to be added
+   * @return the added user
+   */
+  @PostMapping
+  public UserDto save(@Valid @RequestBody final UserDto user) {
+    log.info("Received request POST /users with body: {}", user);
+    final UserDto savedUser = userService.save(user);
+    log.info("User successfully added: {}", savedUser);
+    return savedUser;
+  }
 
-    /**
-     * Handles PUT requests to update an existing user.
-     *
-     * @param newUser - the user with updated information
-     * @return the updated user
-     */
-    @PutMapping
-    public UserDto update(@Valid @RequestBody final UserDto newUser) {
-        log.info("Received request PUT /users with body: {}", newUser);
-        final UserDto updatedUser = userService.update(newUser);
-        log.info("User updated successfully: {}", updatedUser);
-        return updatedUser;
-    }
+  /**
+   * Handles PUT requests to update an existing user.
+   *
+   * @param newUser - the user with updated information
+   * @return the updated user
+   */
+  @PutMapping
+  public UserDto update(@Valid @RequestBody final UserDto newUser) {
+    log.info("Received request PUT /users with body: {}", newUser);
+    final UserDto updatedUser = userService.update(newUser);
+    log.info("User updated successfully: {}", updatedUser);
+    return updatedUser;
+  }
 
-    /**
-     * Handles PUT request to adds a friend to the user with the specified IDs.
-     *
-     * @param id       The ID of the user who is adding a friend. Must not be null.
-     * @param friendId The ID of the friend to be added. Must not be null.
-     * @return The updated user with the added friend.
-     */
-    @PutMapping("/{id}/friends/{friendId}")
-    public UserDto addFriend(@PathVariable("id") @NotNull final Long id,
-                             @PathVariable("friendId") @NotNull final Long friendId) {
-        log.info("Received request PUT users/{}/friends/{}", id, friendId);
-        final UserDto user = userService.addFriend(id, friendId);
-        log.info("Adding friend to the user is successful: {}", user);
-        return user;
-    }
+  /**
+   * Handles PUT request to adds a friend to the user with the specified IDs.
+   *
+   * @param id       The ID of the user who is adding a friend. Must not be null.
+   * @param friendId The ID of the friend to be added. Must not be null.
+   * @return The updated user with the added friend.
+   */
+  @PutMapping("/{id}/friends/{friendId}")
+  public UserDto addFriend(@PathVariable("id") @NotNull final Long id,
+      @PathVariable("friendId") @NotNull final Long friendId) {
+    log.info("Received request PUT users/{}/friends/{}", id, friendId);
+    final UserDto user = userService.addFriend(id, friendId);
+    log.info("Adding friend to the user is successful: {}", user);
+    return user;
+  }
 
-    /**
-     * Handles GET requests to retrieve all users.
-     *
-     * @return a collection of all users
-     */
-    @GetMapping
-    public Collection<UserDto> getAll() {
-        log.info("Received request GET users");
-        return userService.getAll();
-    }
+  /**
+   * Handles GET requests to retrieve all users.
+   *
+   * @return a collection of all users
+   */
+  @GetMapping
+  public Collection<UserDto> getAll() {
+    log.info("Received request GET users");
+    return userService.getAll();
+  }
 
-    /**
-     * Handles GET requests to retrieve friends of a user by their ID.
-     *
-     * @param id The ID of the user whose friends are to be retrieved. Must not be null.
-     * @return The list of friends of the user with the specified ID.
-     */
-    @GetMapping("/{id}/friends")
-    public List<UserDto> getFriendsByUserId(@PathVariable @NotNull final Long id) {
-        log.info("Received request GET users/{}/friends", id);
-        return userService.getUserFriends(id);
-    }
+  /**
+   * Handles GET requests to retrieve friends of a user by their ID.
+   *
+   * @param id The ID of the user whose friends are to be retrieved. Must not be null.
+   * @return The list of friends of the user with the specified ID.
+   */
+  @GetMapping("/{id}/friends")
+  public List<UserDto> getFriendsByUserId(@PathVariable @NotNull final Long id) {
+    log.info("Received request GET users/{}/friends", id);
+    return userService.getUserFriends(id);
+  }
 
     /**
      * Handles GET request to retrieve the list of mutual friends between two users.
@@ -130,16 +129,16 @@ public class UserController {
         return userService.removeFriend(id, friendId);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable final Long id) {
-        log.info("Received request DELETE user/{}", id);
-        userService.removeById(id);
-    }
+  @DeleteMapping("/{id}")
+  public void deleteById(@PathVariable final Long id) {
+    log.info("Received request DELETE user/{}", id);
+    userService.removeById(id);
+  }
 
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable final long id) {
         log.info("Received request GET user/{}", id);
-        return UserMapper.mapToUserDto(userService.getUserByIdOrThrow(id));
+        return userService.getById(id);
     }
 
     @GetMapping("/{id}/recommendations")
@@ -147,4 +146,18 @@ public class UserController {
         log.info("Received request GET user/{}/recommendations", id);
         return userService.getUserRecommendations(id);
     }
+
+
+  /**
+   * Handles GET requests to retrieve the event feed for a user.
+   *
+   * @param id the ID of the user whose feed is to be retrieved, must be positive
+   * @return a list of events associated with the user
+   */
+
+  @GetMapping("/{id}/feed")
+  public List<EventDto> getFeed(@PathVariable("id") @NotNull @Positive final Long id) {
+    log.info("Receiver request GET users/{}/feed", id);
+    return userService.getFeed(id);
+  }
 }

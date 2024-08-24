@@ -6,6 +6,14 @@ MERGE INTO genre (name)
 KEY(name)
 VALUES ('Комедия'), ('Драма'), ('Мультфильм'), ('Триллер'), ('Документальный'), ('Боевик');
 
+MERGE INTO event_type (type)
+KEY(type)
+VALUES ('LIKE'), ('REVIEW'), ('FRIEND');
+
+MERGE INTO operation (name)
+KEY(name)
+VALUES ('REMOVE'), ('ADD'), ('UPDATE');
+
 MERGE INTO "user" (email, login, name, birthday)
 KEY(email)
 VALUES

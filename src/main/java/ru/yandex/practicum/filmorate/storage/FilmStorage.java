@@ -48,5 +48,20 @@ public interface FilmStorage extends Storage<Film> {
 
   List<Film> getDirectorFilms(Long id, String sortBy);
 
+  /**
+   * Retrieves a list of films recommended to a user based on their likes and friends' likes.
+   *
+   * @param userId the ID of the user.
+   * @param similarUserId the ID of the user's friend.
+   */
   Collection<Film> getRecommendedFilms(Long userId, Long similarUserId);
+
+  /**
+   * Retrieves a list of films that both a user and a friend have liked.
+   *
+   * @param userId the ID of the user.
+   * @param friendId the ID of the user's friend.
+   */
+  Collection<Film> getCommonFilms(Long userId, Long friendId);
+
 }

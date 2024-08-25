@@ -93,6 +93,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     return List.of();
   }
 
+  @Override
+  public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+    return List.of();
+  }
+
   /**
    * Checks for data duplication in the collection of films. Verifies whether the given film already
    * exists in the collection of films, excluding itself if it is already present (based on ID

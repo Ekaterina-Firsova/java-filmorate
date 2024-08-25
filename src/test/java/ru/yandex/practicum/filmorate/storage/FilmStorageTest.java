@@ -237,4 +237,20 @@ public class FilmStorageTest {
                 .extracting("id")
                 .containsExactly(4L);
     }
+
+    @Test
+    @DisplayName("getCommonFilms(Long, Long) - returns the common films between users.")
+    public void getCommonFilms() {
+        final int count = 1;
+
+        final Collection<Film> films = filmStorage.getCommonFilms(1L, 2L);
+
+        assertThat(films)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(count)
+                .extracting("id")
+                .containsExactly(4L);
+    }
+
 }

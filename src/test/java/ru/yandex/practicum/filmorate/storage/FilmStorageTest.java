@@ -237,6 +237,7 @@ public class FilmStorageTest {
                 .extracting("id")
                 .containsExactly(4L);
     }
+
     @Test
     @DisplayName("getCommonFilms(Long, Long) - returns the common films between users.")
     public void getCommonFilms() {

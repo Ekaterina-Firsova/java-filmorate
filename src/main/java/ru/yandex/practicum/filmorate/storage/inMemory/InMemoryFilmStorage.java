@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Component
@@ -95,6 +96,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
   @Override
   public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+    return List.of();
+  }
+
+  @Override
+  public List<Film> searchBy(String query, List<SearchCriteria> searchCriterias) {
     return List.of();
   }
 

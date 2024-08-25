@@ -168,5 +168,4 @@ public class UserDbStorage extends BaseRepository<User> implements UserStorage {
 
         return similarUser.map(User::getId).orElse(null);
     }
-
 }

@@ -167,4 +167,8 @@ public class FilmService implements CrudService<FilmDto> {
   public List<FilmDto> getDirectorFilms(final Long id, final String sortBy) {
     return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();
   }
+
+  public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+    return filmStorage.getCommonFilms(userId, friendId);
+  }
 }

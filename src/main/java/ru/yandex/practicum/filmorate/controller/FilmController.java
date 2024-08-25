@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 /**
@@ -148,4 +149,11 @@ public class FilmController {
         log.info("Received request GET /director/{}?sortBy={}", id, sortBy);
         return filmService.getDirectorFilms(id, sortBy);
     }
+
+    @GetMapping("common")
+    public Collection<Film> getCommonFilms(@RequestParam String userId,
+                                           @RequestParam String friendId) {
+        return filmService.getCommonFilms(Long.valueOf(userId), Long.valueOf(friendId));
+    }
+
 }

@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +19,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.Operation;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
@@ -37,8 +40,9 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #addLike(Long, Long)}: Adds a like to a film from a user.</li>
  * <li>{@link #removeLike(Long, Long)}: Removes a like from a film by a user.</li>
  * <li>{@link #removeById(Long): Removes a film from the DB by a given id.}</li>
- * <li>{@link #getDirectorFilms(Long, String)}: Retrieves all films for a given director sorted ID by certain criteria.</li>
- * <li>{@l #getCommonFilms(Long, Long)}: Retrieves common films for two users sorted by its popularity.</li>
+ * <li>{@link #getDirectorFilms(Long, String)}: Retrieves all films for a given director sorted by number of likes or release year.</li>
+ * <li>{@link #getCommonFilms(Long, Long)}: Retrieves common films for two users sorted by its popularity.</li>
+ * <li>{@link #search(String, String)}: Serches for films based on the specified query and search criteria.</li>
  * </ul>
  *
  * @see Film
@@ -187,4 +191,17 @@ public class FilmService implements CrudService<FilmDto> {
   public Collection<Film> getCommonFilms(Long userId, Long friendId) {
     return filmStorage.getCommonFilms(userId, friendId);
   }
+
+  public List<FilmDto> search(final String query, final String by) {
+    log.debug("Inside search method for query {} by parameters by {}.", query, by);
+
+    final List<SearchCriteria> searchCriteria = Arrays.stream(by.split(","))
+        .map(String::trim)
+        .map(SearchCriteria::fromString)
+        .toList();
+    return filmStorage.searchBy(query, searchCriteria).stream()
+        .map(FilmMapper::mapToFilmDto)
+        .toList();
+  }
+
 }

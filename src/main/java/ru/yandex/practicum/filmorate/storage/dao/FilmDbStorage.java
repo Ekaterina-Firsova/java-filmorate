@@ -4,13 +4,16 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exceptions.InvalidDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -150,6 +153,27 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       ORDER BY f.release_date
       """;
   private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
+  private static final String SEARCH_BY_ONE_CRITERIA_START = """
+      SELECT f.*,
+      	     mr.NAME AS mpa_name,
+      	     array_agg( g.ID) AS genre_id,
+      	     array_agg( g.NAME)AS genre_name,
+      	     array_agg( ul.USER_ID) AS like_id,
+      	     array_agg( d.ID) AS director_id,
+      	     array_agg( d.NAME)AS director_name
+      FROM film f
+      LEFT JOIN MPA_RATING mr ON f.MPA_RATING_ID = mr.ID
+      LEFT JOIN FILM_GENRE fg ON f.ID = fg.FILM_ID
+      LEFT JOIN GENRE g ON fg.GENRE_ID = g.ID
+      LEFT JOIN USER_LIKE ul ON ul.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR_FILM df ON df.FILM_ID = f.ID
+      LEFT JOIN DIRECTOR d ON df.DIRECTOR_ID = d.ID
+      WHERE
+      """;
+  private static final String SEARCH_BY_ONE_CRITERIA_END = """
+      GROUP BY f.ID, mr.NAME
+      ORDER BY count(ul.USER_ID) desc
+      """;
 
   private final GenreDbStorage genreStorage;
 
@@ -277,6 +301,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     insertDirectorToDb(film);
   }
 
+  @Override
   public List<Film> getDirectorFilms(final Long id, final String sortBy) {
     log.info("Get director's film with ID - {}, sorted by - {}", id, sortBy);
     return switch (sortBy) {
@@ -339,4 +364,37 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
     return findMany(query, userId, friendId);
   }
 
+
+  @Override
+  public List<Film> searchBy(final String query, final List<SearchCriteria> searchCriterias) {
+    log.info("Searching films by query{} and criteria list {}.", query, searchCriterias);
+
+    final String whereClause = searchCriterias.stream()
+        .map(sc -> buildWhereClause(sc, query))
+        .collect(Collectors.joining(" OR "));
+
+    return findMany(buildSearchByQuery(whereClause)).stream().toList();
+  }
+
+  private String buildWhereClause(final SearchCriteria searchCriteria, final String query) {
+    log.debug("Building filter for the WHERE clause using criteria {} and partial text {}",
+        searchCriteria, query);
+    return String.format(" LOWER(%s) LIKE LOWER('%%%s%%')", searchCriteria.getTableColumn(), query);
+  }
+
+  private String buildSearchByQuery(final String whereClause) {
+    log.debug("Assembling a query to search films by uniting parts start + where clause {} + end.",
+        whereClause);
+    return SEARCH_BY_ONE_CRITERIA_START + whereClause + SEARCH_BY_ONE_CRITERIA_END;
+  }
+
+  private String getTableName(final String searchCriteria) {
+    log.debug("Defining table name that corresponds search criteria {}.", searchCriteria);
+    return switch (searchCriteria) {
+      case "title" -> "f.NAME";
+      case "director" -> "d.NAME";
+      default -> throw new InvalidDataException(
+          String.format("Incorrect search criteria %s", searchCriteria));
+    };
+  }
 }

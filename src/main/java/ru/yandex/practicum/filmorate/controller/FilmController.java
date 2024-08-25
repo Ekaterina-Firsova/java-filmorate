@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Collection;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.validator.ValidBy;
 
 /**
  * Controller class for managing Films in the Filmorate application. All endpoints in this
@@ -34,7 +36,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final FilmService filmService;
+  private final FilmService filmService;
 
     /**
      * Handles POST requests to add a new film. Params:
@@ -157,5 +159,25 @@ public class FilmController {
                                            @RequestParam String friendId) {
         return filmService.getCommonFilms(Long.valueOf(userId), Long.valueOf(friendId));
     }
+
+  /**
+   * Handles a GET request to search for films based on the specified criteria.
+   *
+   * @param query the search query string, cannot be blank
+   * @param by the criteria to search by, defaults to "director,title" if not provided
+   *          and must be one of the predefined options specified in {@code @ValidBy}
+   * @return a list of {@link FilmDto} objects that match the search criteria
+   * @throws IllegalArgumentException if the {@code by} parameter contains invalid values
+   */
+  @GetMapping("/search")
+  public List<FilmDto> search(
+      @RequestParam(name = "query") @NotBlank final String query,
+      @RequestParam(name = "by", defaultValue = "director,title")
+      @ValidBy(byOptions = {"title", "director"}) final String by) {
+    log.info("Received request GET films/search?query={}&by={}", query, by);
+    final List<FilmDto> searchResult = filmService.search(query, by);
+    log.info("Request search  query={} by={} processed successfully.", query, by);
+    return searchResult;
+  }
 
 }

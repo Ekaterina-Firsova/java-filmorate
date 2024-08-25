@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.dao;
 
 import java.sql.Date;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -222,7 +221,6 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   public List<Film> getTopFilms(final int count, final Long genreId, final Integer year) {
       log.debug("Getting top {} liked films.", count);
       return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream()
-              .sorted(Comparator.comparing(film -> film.getLikes().size(), Comparator.reverseOrder()))
               .filter(film -> genreId == null || film.getGenres()
                       .contains(genreStorage.findById(genreId).orElse(null)))
               .filter(film -> year == null || film.getReleaseDate().getYear() == year)

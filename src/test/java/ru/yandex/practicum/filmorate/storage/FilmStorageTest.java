@@ -183,7 +183,6 @@ public class FilmStorageTest {
 
     final List<Film> topFilms = filmStorage.getTopFilms(count, null, null);
 
-    System.out.println(topFilms);
     assertThat(topFilms)
         .isNotNull()
         .isNotEmpty()
@@ -200,7 +199,6 @@ public class FilmStorageTest {
 
         final List<Film> topFilms = filmStorage.getTopFilms(count, 2L, null);
 
-        System.out.println(topFilms);
         assertThat(topFilms)
                 .isNotNull()
                 .isNotEmpty()
@@ -216,7 +214,6 @@ public class FilmStorageTest {
 
         final List<Film> topFilms = filmStorage.getTopFilms(count, null, 2024);
 
-        System.out.println(topFilms);
         assertThat(topFilms)
                 .isNotNull()
                 .isNotEmpty()
@@ -233,7 +230,6 @@ public class FilmStorageTest {
 
         final List<Film> topFilms = filmStorage.getTopFilms(count, 6L, 2024);
 
-        System.out.println(topFilms);
         assertThat(topFilms)
                 .isNotNull()
                 .isNotEmpty()

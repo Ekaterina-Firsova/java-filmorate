@@ -238,7 +238,7 @@ public class FilmStorageTest {
                 .containsExactly(4L);
     }
     @Test
-    @DisplayName("getCommonFilms(Long, Long) - returns top N amount the most liked by users films.")
+    @DisplayName("getCommonFilms(Long, Long) - returns the common films between users.")
     public void getCommonFilms() {
         final int count = 1;
 

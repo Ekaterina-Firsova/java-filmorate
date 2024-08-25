@@ -49,3 +49,11 @@ VALUES
     (4, 2),
     (4, 3),
     (4, 4);
+
+MERGE INTO reviews(content, is_positive, user_id, film_id, useful)
+KEY(user_id, film_id)
+VALUES('Хороший фильм', true, 2, 1, 1);
+
+MERGE INTO review_likes(review_id, user_id, is_useful)
+KEY(user_id)
+VALUES(1, 2, true);

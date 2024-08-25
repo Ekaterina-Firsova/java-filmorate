@@ -113,9 +113,11 @@ public class FilmController {
      */
     @GetMapping("/popular")
     public List<FilmDto> getTopByLikes(
-            @RequestParam(defaultValue = "10") @Min(1) final Integer count) {
+            @RequestParam(defaultValue = "10") @Min(1) final Integer count,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Integer year) {
         log.info("Received request GET /films/popular?count={}", count);
-        final List<FilmDto> mostPopularFilms = filmService.getTopFilms(count);
+        final List<FilmDto> mostPopularFilms = filmService.getTopFilms(count, genreId, year);
         log.info("Returning top {} films : {}", count, mostPopularFilms);
         return mostPopularFilms;
     }

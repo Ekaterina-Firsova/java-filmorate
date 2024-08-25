@@ -151,9 +151,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       """;
   private static final String REMOVE_DIRECTOR_QUERY = "DELETE from director_film WHERE film_id = ?";
 
+  private final GenreDbStorage genreStorage;
+
   @Autowired
-  public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper) {
+  public FilmDbStorage(final JdbcTemplate jdbc, final RowMapper<Film> mapper, GenreDbStorage genreStorage) {
     super(jdbc, mapper);
+    this.genreStorage = genreStorage;
   }
 
 
@@ -215,9 +218,13 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   }
 
   @Override
-  public List<Film> getTopFilms(final int count) {
-    log.debug("Inside 'getTopFilms' method to get a list of top {} liked films.", count);
-    return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream().toList();
+  public List<Film> getTopFilms(final int count, final Long genreId, final Integer year) {
+      log.debug("Getting top {} liked films.", count);
+      return findMany(GET_TOP_LIKED_FILMS_QUERY, count).stream()
+              .filter(film -> genreId == null || film.getGenres()
+                      .contains(genreStorage.findById(genreId).orElse(null)))
+              .filter(film -> year == null || film.getReleaseDate().getYear() == year)
+              .toList();
   }
 
   @Override

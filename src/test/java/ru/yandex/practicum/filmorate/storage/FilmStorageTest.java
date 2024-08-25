@@ -193,4 +193,19 @@ public class FilmStorageTest {
 
   }
 
+    @Test
+    @DisplayName("getCommonFilms(Long, Long) - returns top N amount the most liked by users films.")
+    public void getCommonFilms() {
+        final int count = 1;
+
+        final Collection<Film> films = filmStorage.getCommonFilms(1L, 2L);
+
+        assertThat(films)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(count)
+                .extracting("id")
+                .containsExactly(4L);
+    }
+
 }

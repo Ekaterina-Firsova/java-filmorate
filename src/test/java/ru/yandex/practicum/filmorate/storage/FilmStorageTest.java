@@ -5,10 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -18,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.builder.TestDataBuilder;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.UserDbStorage;
@@ -192,65 +197,132 @@ public class FilmStorageTest {
 
   }
 
-    @Test
-    @DisplayName("getTopFilms(Long, Long, null) - returns top N amount the most liked by users films, filter in genre.")
-    public void getTopFilmsWithTheMostLikesCountWhenYearIsNull() {
-        final int count = 4;
+  @Test
+  @DisplayName("getTopFilms(Long, Long, null) - returns top N amount the most liked by users films, filter in genre.")
+  public void getTopFilmsWithTheMostLikesCountWhenYearIsNull() {
+    final int count = 4;
 
-        final List<Film> topFilms = filmStorage.getTopFilms(count, 2L, null);
+    final List<Film> topFilms = filmStorage.getTopFilms(count, 2L, null);
 
-        assertThat(topFilms)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(1)
-                .extracting("id")
-                .containsExactly(2L);
+    assertThat(topFilms)
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(1)
+        .extracting("id")
+        .containsExactly(2L);
+  }
+
+  @Test
+  @DisplayName("getTopFilms(Long, null, Integer) - returns top N amount the most liked by users films, filter in year.")
+  public void getTopFilmsWithTheMostLikesCountWhenGenreIsNull() {
+    final int count = 4;
+
+    final List<Film> topFilms = filmStorage.getTopFilms(count, null, 2024);
+
+    assertThat(topFilms)
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(2)
+        .extracting("id")
+        .containsExactly(4L, 3L);
+  }
+
+  @Test
+  @DisplayName(
+      "getTopFilms(Long, Long, Integer) - returns top N amount the most liked by users films," +
+          " filter in year and genre.")
+  public void getTopFilmsWithTheMostLikesCount() {
+    final int count = 4;
+
+    final List<Film> topFilms = filmStorage.getTopFilms(count, 6L, 2024);
+
+    assertThat(topFilms)
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(1)
+        .extracting("id")
+        .containsExactly(4L);
+  }
+
+  @Test
+  @DisplayName("getCommonFilms(Long, Long) - returns the common films between users.")
+  public void getCommonFilms() {
+    final int count = 1;
+
+    final Collection<Film> films = filmStorage.getCommonFilms(1L, 2L);
+
+    assertThat(films)
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(count)
+        .extracting("id")
+        .containsExactly(4L);
+  }
+
+  @ParameterizedTest(name = "{0}, {1}")
+  @DisplayName("Testing searching with valid parameters")
+  @MethodSource("provideValidParameters")
+  public void searchByValidParameters(final String query,
+      final List<SearchCriteria> searchCriteria,
+      final int size, final List<Long> filmId, final List<List<String>> director) {
+
+    final List<Film> actual = filmStorage.searchBy(query, searchCriteria);
+
+    assertThat(actual)
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(size);
+    for (int i = 0; i < size; i++) {
+      final Film film = actual.get(i);
+      assertThat(film.getId()).isEqualTo(filmId.get(i));
+      assertThat(film.getDirectors())
+          .extracting("name")
+          .containsExactlyElementsOf(director.get(i));
     }
+  }
 
-    @Test
-    @DisplayName("getTopFilms(Long, null, Integer) - returns top N amount the most liked by users films, filter in year.")
-    public void getTopFilmsWithTheMostLikesCountWhenGenreIsNull() {
-        final int count = 4;
+  @ParameterizedTest(name = "{0}, {1}")
+  @DisplayName("Testing searching with valid parameters and returning empty list")
+  @MethodSource("provideValidParametersEmptyList")
+  public void searchByValidParametersReturnsEmptyList(final String query, final List<SearchCriteria> searchCriteria) {
 
-        final List<Film> topFilms = filmStorage.getTopFilms(count, null, 2024);
+    final List<Film> actual = filmStorage.searchBy(query, searchCriteria);
 
-        assertThat(topFilms)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(2)
-                .extracting("id")
-                .containsExactly(4L, 3L);
-    }
+    assertThat(actual)
+        .isNotNull()
+        .isEmpty();
+  }
 
-    @Test
-    @DisplayName("getTopFilms(Long, Long, Integer) - returns top N amount the most liked by users films," +
-            " filter in year and genre.")
-    public void getTopFilmsWithTheMostLikesCount() {
-        final int count = 4;
+  private static Stream<Arguments> provideValidParameters() {
+    return Stream.of(
+        Arguments.of("travel", //query
+            List.of(SearchCriteria.TITLE), //searchCriteria
+            1, //result List size
+            List.of(1L), //IDs of the films found
+            List.of(List.of("Robert Zemeckis"))), //Director names for the films found
 
-        final List<Film> topFilms = filmStorage.getTopFilms(count, 6L, 2024);
+        Arguments.of("travel",
+            List.of(SearchCriteria.TITLE, SearchCriteria.DIRECTOR),
+            1,
+            List.of(1L),
+            List.of(List.of("Robert Zemeckis"))),
 
-        assertThat(topFilms)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(1)
-                .extracting("id")
-                .containsExactly(4L);
-    }
+        Arguments.of("the",
+            List.of(SearchCriteria.TITLE, SearchCriteria.DIRECTOR),
+            3,
+            List.of(4L, 3L, 1L),
+            List.of(
+                List.of(),
+                List.of("Alfred Hitchcock"),
+                List.of("Robert Zemeckis")))
+    );
+  }
 
-    @Test
-    @DisplayName("getCommonFilms(Long, Long) - returns the common films between users.")
-    public void getCommonFilms() {
-        final int count = 1;
-
-        final Collection<Film> films = filmStorage.getCommonFilms(1L, 2L);
-
-        assertThat(films)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(count)
-                .extracting("id")
-                .containsExactly(4L);
-    }
+  private static Stream<Arguments> provideValidParametersEmptyList() {
+    return Stream.of(
+        Arguments.of("travel", List.of(SearchCriteria.DIRECTOR)),
+        Arguments.of("CANT FIND ANYTHING", List.of(SearchCriteria.TITLE, SearchCriteria.DIRECTOR))
+    );
+  }
 
 }

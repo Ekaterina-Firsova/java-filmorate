@@ -101,51 +101,69 @@ public class UserController {
     return userService.getUserFriends(id);
   }
 
-    /**
-     * Handles GET request to retrieve the list of mutual friends between two users.
-     *
-     * @param id      The ID of the first user.
-     * @param otherId The ID of the second user to compare friends with.
-     * @return The List of mutual friends between the two users..
-     */
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public List<UserDto> getMutualFriends(@PathVariable("id") @NotNull final Long id,
-                                          @PathVariable("otherId") @NotNull final Long otherId) {
-        log.info("Received request GET users/{}/friends/common/{}", id, otherId);
-        return userService.getMutualFriends(id, otherId);
-    }
+  /**
+   * Handles GET request to retrieve the list of mutual friends between two users.
+   *
+   * @param id      The ID of the first user.
+   * @param otherId The ID of the second user to compare friends with.
+   * @return The List of mutual friends between the two users..
+   */
+  @GetMapping("/{id}/friends/common/{otherId}")
+  public List<UserDto> getMutualFriends(@PathVariable("id") @NotNull final Long id,
+      @PathVariable("otherId") @NotNull final Long otherId) {
+    log.info("Received request GET users/{}/friends/common/{}", id, otherId);
+    return userService.getMutualFriends(id, otherId);
+  }
 
-    /**
-     * Handles DELETE request to remove a specified friend from the user's friend list.
-     *
-     * @param id       The ID of the user who wants to remove a friend.
-     * @param friendId The ID of the friend to be removed.
-     * @return The updated user data.
-     */
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public UserDto deleteFriend(@PathVariable("id") @NotNull final Long id,
-                                @PathVariable("friendId") @NotNull final Long friendId) {
-        log.info("Received request DELETE users/{}/friends/{}", id, friendId);
-        return userService.removeFriend(id, friendId);
-    }
+  /**
+   * Handles DELETE request to remove a specified friend from the user's friend list.
+   *
+   * @param id       The ID of the user who wants to remove a friend.
+   * @param friendId The ID of the friend to be removed.
+   * @return The updated user data.
+   */
+  @DeleteMapping("/{id}/friends/{friendId}")
+  public UserDto deleteFriend(@PathVariable("id") @NotNull final Long id,
+      @PathVariable("friendId") @NotNull final Long friendId) {
+    log.info("Received request DELETE users/{}/friends/{}", id, friendId);
+    return userService.removeFriend(id, friendId);
+  }
 
+  /**
+   * Handles DELETE requests to remove a user by their ID.
+   *
+   * @param id The ID of the user to be removed.
+   */
   @DeleteMapping("/{id}")
   public void deleteById(@PathVariable final Long id) {
     log.info("Received request DELETE user/{}", id);
     userService.removeById(id);
   }
 
-    @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable final long id) {
-        log.info("Received request GET user/{}", id);
-        return userService.getById(id);
-    }
+  /**
+   * Handles GET requests to retrieve a user by their ID.
+   *
+   * @param id The ID of the user to be retrieved.
+   * @return The user with the specified ID.
+   */
+  @GetMapping("/{id}")
+  public UserDto getUserById(@PathVariable final long id) {
+    log.info("Received request GET user/{}", id);
+    return userService.getById(id);
+  }
 
-    @GetMapping("/{id}/recommendations")
-    public Collection<FilmDto> getUserRecommendations(@PathVariable final long id) {
-        log.info("Received request GET user/{}/recommendations", id);
-        return userService.getUserRecommendations(id);
-    }
+  /**
+   * Handles GET requests to retrieve recommendations for a user based on their preferences and
+   * interactions.
+   *
+   * @param id The ID of the user whose recommendations are to be retrieved.
+   * @return A collection of recommended films for the user.
+   */
+  @GetMapping("/{id}/recommendations")
+  public Collection<FilmDto> getUserRecommendations(@PathVariable final long id) {
+    log.info("Received request GET user/{}/recommendations", id);
+    return userService.getUserRecommendations(id);
+  }
 
 
   /**

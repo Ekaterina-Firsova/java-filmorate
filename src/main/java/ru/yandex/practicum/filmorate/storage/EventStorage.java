@@ -12,19 +12,18 @@ import ru.yandex.practicum.filmorate.storage.dao.EventDbStorage;
  */
 public interface EventStorage {
 
-    /**
-     * Adds a new event to the storage.
-     *
-     * @param event The event to be added.
-     * @return The added event with the new eventId.
-     */
-    Event addEvent(Event event);
+  /**
+   * Adds a new event to the storage.
+   *
+   * @param event The event to be added.
+   */
+  void addEvent(Event event);
 
-    /**
-     * Retrieves a collection of events associated with a specific user ID.
-     *
-     * @param userId the ID of the user whose events are to be retrieved, must not be null
-     * @return a collection of events associated with the specified user
-     */
-    Collection<Event> findUserEvents(Long userId);
+  /**
+   * Retrieves a collection of events associated with a specific user ID.
+   *
+   * @param userId the ID of the user whose events are to be retrieved, must not be null
+   * @return a collection of events associated with the specified user
+   */
+  Collection<Event> findUserEvents(Long userId);
 }

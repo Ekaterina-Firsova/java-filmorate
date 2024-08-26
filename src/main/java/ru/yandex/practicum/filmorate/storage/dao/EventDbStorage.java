@@ -48,7 +48,7 @@ public class EventDbStorage extends BaseRepository<Event> implements EventStorag
   }
 
   @Override
-  public Event addEvent(final Event event) {
+  public void addEvent(final Event event) {
     log.debug("Inside 'addEvent' to add a new event with data: {}", event);
     final Long eventId = insert(INSERT_QUERY,
         event.getEventType().name(),
@@ -58,7 +58,6 @@ public class EventDbStorage extends BaseRepository<Event> implements EventStorag
         event.getEntityId());
     event.setEventId(eventId);
     log.debug("Event added with generated ID: {}", eventId);
-    return event;
   }
 
   @Override

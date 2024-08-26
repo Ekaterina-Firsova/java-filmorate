@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,8 +16,8 @@ import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.EventType;
-import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -54,49 +53,48 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 @Slf4j
 public class UserService implements CrudService<UserDto> {
 
-    private final UserStorage userStorage;
-    private final FilmStorage filmStorage;
-//  private final UserStorage userStorage;
+  private final UserStorage userStorage;
+  private final FilmStorage filmStorage;
   private final EventService eventService;
 
-    @Autowired
-    public UserService(@Qualifier("userDbStorage") final UserStorage userStorage,
-                       @Qualifier("filmDbStorage") final FilmStorage filmStorage,
-                       final EventService eventService) {
-        this.userStorage = userStorage;
-        this.filmStorage = filmStorage;
-        this.eventService = eventService;
-    }
+  @Autowired
+  public UserService(@Qualifier("userDbStorage") final UserStorage userStorage,
+      @Qualifier("filmDbStorage") final FilmStorage filmStorage,
+      final EventService eventService) {
+    this.userStorage = userStorage;
+    this.filmStorage = filmStorage;
+    this.eventService = eventService;
+  }
 
-    @Override
-    public UserDto save(final UserDto userDto) {
-        log.debug("Inside save method to safe a user {}", userDto);
-        final User user = UserMapper.mapToUser(userDto);
-        checkAndSetUserName(user);
-        return UserMapper.mapToUserDto(userStorage.save(user));
-    }
+  @Override
+  public UserDto save(final UserDto userDto) {
+    log.debug("Inside save method to safe a user {}", userDto);
+    final User user = UserMapper.mapToUser(userDto);
+    checkAndSetUserName(user);
+    return UserMapper.mapToUserDto(userStorage.save(user));
+  }
 
-    @Override
-    public UserDto update(final UserDto userDto) {
-        log.debug("Inside update method to update a user with data: {}", userDto);
-        validateUserId(userDto.getId());
-        final User user = UserMapper.mapToUser(userDto);
-        checkAndSetUserName(user);
-        return UserMapper.mapToUserDto(userStorage.update(user));
-    }
+  @Override
+  public UserDto update(final UserDto userDto) {
+    log.debug("Inside update method to update a user with data: {}", userDto);
+    validateUserId(userDto.getId());
+    final User user = UserMapper.mapToUser(userDto);
+    checkAndSetUserName(user);
+    return UserMapper.mapToUserDto(userStorage.update(user));
+  }
 
-    @Override
-    public Collection<UserDto> getAll() {
-        log.debug("Inside getAll method");
-        return userStorage.findAll().stream()
-                .map(UserMapper::mapToUserDto).toList();
-    }
+  @Override
+  public Collection<UserDto> getAll() {
+    log.debug("Inside getAll method");
+    return userStorage.findAll().stream()
+        .map(UserMapper::mapToUserDto).toList();
+  }
 
-    @Override
-    public UserDto getById(final Long id) {
-        log.debug("Inside getByID method to get a user with ID = {}", id);
-        return UserMapper.mapToUserDto(getUserByIdOrThrow(id));
-    }
+  @Override
+  public UserDto getById(final Long id) {
+    log.debug("Inside getByID method to get a user with ID = {}", id);
+    return UserMapper.mapToUserDto(getUserByIdOrThrow(id));
+  }
 
   public UserDto addFriend(final Long userId, final Long newFriendId) {
     log.debug("Inside 'addFriend' method: user with id = {} is adding a friend with id = {}",
@@ -179,24 +177,24 @@ public class UserService implements CrudService<UserDto> {
     log.debug("Success in validating user id {} is not null and exist in DB", id);
   }
 
-    private void checkAndSetUserName(final User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-            log.debug("Property name was assigned with Login property value: {}", user.getName());
-        }
+  private void checkAndSetUserName(final User user) {
+    if (user.getName() == null || user.getName().isEmpty()) {
+      user.setName(user.getLogin());
+      log.debug("Property name was assigned with Login property value: {}", user.getName());
     }
+  }
 
-    public Collection<FilmDto> getUserRecommendations(final long userId) {
-        log.debug("Getting recommendations films for user with ID = {}", userId);
-        validateUserId(userId);
-        Long similarUserId = userStorage.getSimilarUser(userId);
-        if (similarUserId == null) {
-            return List.of();
-        }
-        Collection<Film> films = filmStorage.getRecommendedFilms(userId, similarUserId);
-        return films.stream()
-                .map(FilmMapper::mapToFilmDto)
-                .collect(Collectors.toList());
+  public Collection<FilmDto> getUserRecommendations(final long userId) {
+    log.debug("Getting recommendations films for user with ID = {}", userId);
+    validateUserId(userId);
+    Long similarUserId = userStorage.getSimilarUser(userId);
+    if (similarUserId == null) {
+      return List.of();
     }
+    Collection<Film> films = filmStorage.getRecommendedFilms(userId, similarUserId);
+    return films.stream()
+        .map(FilmMapper::mapToFilmDto)
+        .collect(Collectors.toList());
+  }
 
 }

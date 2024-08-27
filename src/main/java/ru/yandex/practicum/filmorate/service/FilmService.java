@@ -39,7 +39,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #getTopFilms(int, Long, Integer)}: Retrieves the top-rated films based on the number of likes.</li>
  * <li>{@link #addLike(Long, Long)}: Adds a like to a film from a user.</li>
  * <li>{@link #removeLike(Long, Long)}: Removes a like from a film by a user.</li>
- * <li>{@link #removeById(Long): Removes a film from the DB by a given id.}</li>
+ * <li>{@link #removeById(Long)}: Removes a film from the DB by a given id.</li>
  * <li>{@link #getDirectorFilms(Long, String)}: Retrieves all films for a given director sorted by number of likes or release year.</li>
  * <li>{@link #getCommonFilms(Long, Long)}: Retrieves common films for two users sorted by its popularity.</li>
  * <li>{@link #search(String, String)}: Serches for films based on the specified query and search criteria.</li>
@@ -179,10 +179,10 @@ public class FilmService implements CrudService<FilmDto> {
     }
   }
 
-    public void removeById(Long id) {
-      log.debug("Deleting film with ID {} ", id);
-      filmStorage.delete(id);
-    }
+  public void removeById(Long id) {
+    log.debug("Deleting film with ID {} ", id);
+    filmStorage.delete(id);
+  }
 
   public List<FilmDto> getDirectorFilms(final Long id, final String sortBy) {
     return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();

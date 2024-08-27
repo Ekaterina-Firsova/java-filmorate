@@ -80,6 +80,8 @@ public class ReviewService {
         }
         int newUseful = 0;
         newReview.setUseful(newUseful);
+        newReview.setUserId(oldReview.getUserId());
+        newReview.setFilmId(oldReview.getFilmId());
         newReview = reviewStorage.update(newReview);
         log.info("Отзыв обновлен: {}", newReview);
         eventService.logEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.UPDATE);

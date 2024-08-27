@@ -57,3 +57,16 @@ VALUES('Хороший фильм', true, 2, 1, 1);
 MERGE INTO review_likes(review_id, user_id, is_useful)
 KEY(user_id)
 VALUES(1, 2, true);
+
+MERGE INTO director (name)
+KEY(name)
+VALUES ('Robert Zemeckis');
+MERGE INTO director (name)
+KEY(name)
+VALUES ('Alfred Hitchcock');
+
+MERGE INTO director_film (director_id, film_id)
+KEY(director_id, film_id)
+VALUES
+    (1, 1),
+    (2, 3);

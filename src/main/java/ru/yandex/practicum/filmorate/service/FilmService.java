@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.MpaRatingStorage;
@@ -35,6 +37,8 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #getTopFilms(int)}: Retrieves the top-rated films based on the number of likes.</li>
  * <li>{@link #addLike(Long, Long)}: Adds a like to a film from a user.</li>
  * <li>{@link #removeLike(Long, Long)}: Removes a like from a film by a user.</li>
+ * <li>{@link #getDirectorFilms(Long, String)}: Retrieves films by director, sorted by number of likes or release year.</li>
+ * <li>{@link #search(String, String)}: Serches for films based on the specified query and search criteria.</li>
  * </ul>
  *
  * @see Film
@@ -158,10 +162,10 @@ public class FilmService implements CrudService<FilmDto> {
     }
   }
 
-    public void removeById(Long id) {
-      log.debug("Deleting film with ID {} ", id);
-      filmStorage.delete(id);
-    }
+  public void removeById(Long id) {
+    log.debug("Deleting film with ID {} ", id);
+    filmStorage.delete(id);
+  }
 
   public List<FilmDto> getDirectorFilms(final Long id, final String sortBy) {
     return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();
@@ -170,4 +174,17 @@ public class FilmService implements CrudService<FilmDto> {
   public Collection<Film> getCommonFilms(Long userId, Long friendId) {
     return filmStorage.getCommonFilms(userId, friendId);
   }
+
+  public List<FilmDto> search(final String query, final String by) {
+    log.debug("Inside search method for query {} by parameters by {}.", query, by);
+
+    final List<SearchCriteria> searchCriteria = Arrays.stream(by.split(","))
+        .map(String::trim)
+        .map(SearchCriteria::fromString)
+        .toList();
+    return filmStorage.searchBy(query, searchCriteria).stream()
+        .map(FilmMapper::mapToFilmDto)
+        .toList();
+  }
+
 }

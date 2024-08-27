@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidDataException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
@@ -25,14 +27,17 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final EventService eventService;
 
     @Autowired
     public ReviewService(ReviewStorage reviewStorage,
                          @Qualifier("userDbStorage") UserStorage userStorage,
-                         @Qualifier("filmDbStorage") FilmStorage filmStorage) {
+                         @Qualifier("filmDbStorage") FilmStorage filmStorage,
+                         EventService eventService) {
         this.reviewStorage = reviewStorage;
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.eventService = eventService;
     }
 
     public Collection<ReviewDto> getReviewsByFilmId(Long filmId, Integer count) {
@@ -57,6 +62,7 @@ public class ReviewService {
         validateUserId(request.getUserId());
         newReview = reviewStorage.save(newReview);
         log.info("Отзыв сохранен: {}", newReview);
+        eventService.logEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.ADD);
         return ReviewMapper.mapToReviewDto(newReview);
     }
 
@@ -76,6 +82,7 @@ public class ReviewService {
         newReview.setUseful(newUseful);
         newReview = reviewStorage.update(newReview);
         log.info("Отзыв обновлен: {}", newReview);
+        eventService.logEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.UPDATE);
         return ReviewMapper.mapToReviewDto(newReview);
     }
 
@@ -83,6 +90,7 @@ public class ReviewService {
         log.info("Запрос на удаление отзыва с id: {}", reviewId);
         Review current = getReview(reviewId);
         reviewStorage.delete(current.getReviewId());
+        eventService.logEvent(current.getUserId(), current.getReviewId(), EventType.REVIEW, Operation.REMOVE);
     }
 
     public ReviewDto addReviewLike(Long reviewId, Long userId) {

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.builder;
 
 import java.time.LocalDate;
 import lombok.experimental.UtilityClass;
+import ru.yandex.practicum.filmorate.dto.ReviewRequest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -47,21 +48,48 @@ public class TestDataBuilder {
 
   public Review buildReview() {
     return Review.builder()
-            .content("Новый отзыв")
-            .isPositive(Boolean.TRUE)
-            .userId(2L)
-            .filmId(2L)
-            .build();
+        .content("Новый отзыв")
+        .isPositive(Boolean.TRUE)
+        .userId(2L)
+        .filmId(2L)
+        .build();
   }
 
   public Review buildUpdateReview() {
     return Review.builder()
-            .reviewId(1L)
-            .content("Новый отзыв")
-            .isPositive(Boolean.FALSE)
-            .userId(1L)
-            .filmId(1L)
-            .build();
+        .reviewId(1L)
+        .content("Новый отзыв")
+        .isPositive(Boolean.FALSE)
+        .userId(1L)
+        .filmId(1L)
+        .build();
   }
+
+  public ReviewRequest buildReview(final Long userId, final Long filmId) {
+    return ReviewRequest.builder()
+        .content("Can't be worse!")
+        .isPositive(false)
+        .userId(userId)
+        .filmId(filmId)
+        .build();
+  }
+
+  public ReviewRequest buildUpdateReview(final Long userId, final Long filmId) {
+    return ReviewRequest.builder()
+        .content("Can't be worse!")
+        .isPositive(false)
+        .userId(userId)
+        .filmId(filmId)
+        .build();
+  }
+
+//  public Review buildReview(final Long userId,final Long filmId) {
+//    return Review.builder()
+//        .content("Can't be worse!")
+//        .isPositive(false)
+//        .userId(userId)
+//        .filmId(filmId)
+//        .build();
+//  }
 
 }

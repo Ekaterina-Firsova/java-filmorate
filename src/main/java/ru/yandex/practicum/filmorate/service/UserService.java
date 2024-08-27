@@ -42,11 +42,14 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #removeFriend(Long, Long)}: Removes a friend from the user's friend list.</li>
  * <li>{@link #removeById(Long)}: Removes a user by their ID.</li>
  * <li>{@link #getFeed(Long)}: Retrieves a list of events related to the user.</li>
+ * <li>{@link #getUserRecommendations(long)}: Retrieves recommendations for a user based on their preferences and interactions.</li>
+ * <li>{@link #validateUserId(Long)}: validated if user with given id exists in the DB, throws exception if not.</li>
  * </ul>
  *
  * @see User
  * @see UserDto
  * @see UserStorage
+ * @see FilmStorage
  * @see EventService
  */
 @Service

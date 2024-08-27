@@ -33,9 +33,12 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #update(FilmDto)}: Updates an existing film in the storage.</li>
  * <li>{@link #getAll()}: Retrieves all films from the storage.</li>
  * <li>{@link #getById(Long)}: Retrieves a film by its ID.</li>
- * <li>{@link #getTopFilms(int)}: Retrieves the top-rated films based on the number of likes.</li>
+ * <li>{@link #getTopFilms(int, Long, Integer)}: Retrieves the top-rated films based on the number of likes.</li>
  * <li>{@link #addLike(Long, Long)}: Adds a like to a film from a user.</li>
  * <li>{@link #removeLike(Long, Long)}: Removes a like from a film by a user.</li>
+ * <li>{@link #removeById(Long): Removes a film from the DB by a given id.}</li>
+ * <li>{@link #getDirectorFilms(Long, String)}: Retrieves all films for a given director sorted ID by certain criteria.</li>
+ * <li>{@l #getCommonFilms(Long, Long)}: Retrieves common films for two users sorted by its popularity.</li>
  * </ul>
  *
  * @see Film

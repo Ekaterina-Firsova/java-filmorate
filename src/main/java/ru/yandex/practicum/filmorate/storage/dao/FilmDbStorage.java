@@ -37,8 +37,8 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
       INSERT INTO film_genre (film_id, genre_id)
       VALUES (?, ?)
       """;
-  private static final String INSERT_LIKE_QUERY = """
-      INSERT INTO user_like (film_id, user_id)
+  private static final String ADD_LIKE_QUERY = """
+      MERGE INTO user_like (film_id, user_id)
       VALUES (?, ?)
       """;
   private static final String UPDATE_FILM_QUERY = """
@@ -230,7 +230,7 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
   @Override
   public Film addLike(final Long filmId, final Long userId) {
     log.debug("Inside 'addLike' method to save like from user {} for the film {}.", userId, filmId);
-    insertCompositePk(INSERT_LIKE_QUERY, filmId, userId);
+    insertCompositePk(ADD_LIKE_QUERY, filmId, userId);
     return findById(filmId).orElseThrow(
             () -> new NotFoundException("Film with Id = " + filmId + "not found."));
   }

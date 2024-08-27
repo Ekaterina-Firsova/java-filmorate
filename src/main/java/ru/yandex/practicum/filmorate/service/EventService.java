@@ -40,7 +40,6 @@ public class EventService {
     return eventStorage.findUserEvents(userId).stream().map(EventMapper::mapToEventDto).toList();
   }
 
-  //TODO in process - to make sure that events are collecting from UserService, FilmService, Review
   public void logEvent(final Long userId, final Long entityId, EventType type,
       Operation operation) {
     final Event event = Event.builder()

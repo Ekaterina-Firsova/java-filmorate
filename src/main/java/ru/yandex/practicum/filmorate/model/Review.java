@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @Builder
-@EqualsAndHashCode(of = {"reviewId", "userId", "filmId"})
+@EqualsAndHashCode(of = {"reviewId"})
 public class Review {
     private Long reviewId;
     private String content;

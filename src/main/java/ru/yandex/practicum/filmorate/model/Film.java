@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ public class Film {
    * 1895.
    */
   @NotNull(message = "ReleaseDate should not be null.")
+  @PastOrPresent(message = "Release date should not be in future.")
   @DateAfter(after = MIN_DATE, message = "Release date should not be before " + MIN_DATE)
   private LocalDate releaseDate;
 
@@ -73,5 +75,5 @@ public class Film {
    * film only once.
    */
   private final Set<Long> likes = new HashSet<>();
-  private final Set<Director> directors = new HashSet<>();
+
 }

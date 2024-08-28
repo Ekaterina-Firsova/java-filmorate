@@ -6,14 +6,6 @@ MERGE INTO genre (name)
 KEY(name)
 VALUES ('Комедия'), ('Драма'), ('Мультфильм'), ('Триллер'), ('Документальный'), ('Боевик');
 
-MERGE INTO event_type (type)
-KEY(type)
-VALUES ('LIKE'), ('REVIEW'), ('FRIEND');
-
-MERGE INTO operation (name)
-KEY(name)
-VALUES ('REMOVE'), ('ADD'), ('UPDATE');
-
 MERGE INTO "user" (email, login, name, birthday)
 KEY(email)
 VALUES
@@ -57,24 +49,3 @@ VALUES
     (4, 2),
     (4, 3),
     (4, 4);
-
-MERGE INTO reviews(content, is_positive, user_id, film_id, useful)
-KEY(user_id, film_id)
-VALUES('Хороший фильм', true, 2, 1, 1);
-
-MERGE INTO review_likes(review_id, user_id, is_useful)
-KEY(user_id)
-VALUES(1, 2, true);
-
-MERGE INTO director (name)
-KEY(name)
-VALUES ('Robert Zemeckis');
-MERGE INTO director (name)
-KEY(name)
-VALUES ('Alfred Hitchcock');
-
-MERGE INTO director_film (director_id, film_id)
-KEY(director_id, film_id)
-VALUES
-    (1, 1),
-    (2, 3);

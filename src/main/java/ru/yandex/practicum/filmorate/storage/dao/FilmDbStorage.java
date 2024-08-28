@@ -274,14 +274,13 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
             insertCompositePk(INSERT_GENRE_QUERY, film.getId(), genre.getId()));
   }
 
-//  TODO
+
   private void updateGenres(final Film film) {
     log.debug("Updating genres for film {}.", film);
-    delete(REMOVE_GENRES_QUERY, film.getId()); //TODO added
+    delete(REMOVE_GENRES_QUERY, film.getId());
     if (film.getGenres().isEmpty()) {
       return;
     }
-//    delete(REMOVE_GENRES_QUERY, film.getId());
     insertGenresToDb(film);
   }
 
@@ -294,14 +293,12 @@ public class FilmDbStorage extends BaseRepository<Film> implements FilmStorage {
             insertCompositePk(INSERT_DIRECTOR_QUERY, director.getId(), film.getId()));
   }
 
-//  TODO
   private void updateDirector(final Film film) {
     log.info("Updating director for film {}.", film);
-    delete(REMOVE_DIRECTOR_QUERY, film.getId()); //TODO added
+    delete(REMOVE_DIRECTOR_QUERY, film.getId());
     if (film.getDirectors().isEmpty()) {
       return;
     }
-//    delete(REMOVE_DIRECTOR_QUERY, film.getId());
     insertDirectorToDb(film);
   }
 

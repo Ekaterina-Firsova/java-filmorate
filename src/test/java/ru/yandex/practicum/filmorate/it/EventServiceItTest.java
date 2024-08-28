@@ -18,16 +18,19 @@ import ru.yandex.practicum.filmorate.dto.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.ReviewRequest;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.dao.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.MpaRatingDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.rowmappers.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.storage.rowmappers.EventRowMapper;
 import ru.yandex.practicum.filmorate.storage.rowmappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.rowmappers.GenreRowMapper;
@@ -43,11 +46,11 @@ import ru.yandex.practicum.filmorate.storage.rowmappers.UserRowMapper;
     UserService.class, UserDbStorage.class, UserRowMapper.class,
     EventService.class, EventDbStorage.class, EventRowMapper.class,
     GenreDbStorage.class, GenreRowMapper.class, MpaRatingDbStorage.class, MpaRatingRowMapper.class,
-    ReviewService.class, ReviewDbStorage.class, ReviewRowMapper.class})
+    ReviewService.class, ReviewDbStorage.class, ReviewRowMapper.class,
+    DirectorService.class, DirectorDbStorage.class, DirectorRowMapper.class})
 @Transactional
 public class EventServiceItTest {
 
-  private static final Long ID_START = 1L;
   private final EventService eventService;
   private final UserService userService;
   private final FilmService filmService;

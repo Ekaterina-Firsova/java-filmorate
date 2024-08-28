@@ -60,18 +60,20 @@ public class FilmService implements CrudService<FilmDto> {
   private final GenreStorage genreStorage;
   private final MpaRatingStorage mpaStorage;
   private final EventService eventService;
+  private final DirectorService directorService;
 
 
   @Autowired
   public FilmService(@Qualifier("filmDbStorage") final FilmStorage filmStorage,
       final UserService userService,
       final GenreStorage genreStorage,
-      final MpaRatingStorage mpaStorage, EventService eventService) {
+      final MpaRatingStorage mpaStorage, EventService eventService, DirectorService directorService) {
     this.filmStorage = filmStorage;
     this.userService = userService;
     this.genreStorage = genreStorage;
     this.mpaStorage = mpaStorage;
     this.eventService = eventService;
+    this.directorService = directorService;
   }
 
   @Override
@@ -185,6 +187,7 @@ public class FilmService implements CrudService<FilmDto> {
   }
 
   public List<FilmDto> getDirectorFilms(final Long id, final String sortBy) {
+    directorService.validateDirectorId(id);
     return filmStorage.getDirectorFilms(id, sortBy).stream().map(FilmMapper::mapToFilmDto).toList();
   }
 

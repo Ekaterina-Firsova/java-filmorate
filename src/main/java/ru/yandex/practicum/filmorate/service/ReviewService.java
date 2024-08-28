@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.ReviewRequest;
-import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
-import ru.yandex.practicum.filmorate.exceptions.InvalidDataException;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.exception.InvalidDataException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
@@ -62,7 +62,7 @@ public class ReviewService {
         validateUserId(request.getUserId());
         newReview = reviewStorage.save(newReview);
         log.info("Отзыв сохранен: {}", newReview);
-        eventService.logEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.ADD);
+        eventService.addEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.ADD);
         return ReviewMapper.mapToReviewDto(newReview);
     }
 
@@ -84,7 +84,7 @@ public class ReviewService {
         newReview.setFilmId(oldReview.getFilmId());
         newReview = reviewStorage.update(newReview);
         log.info("Отзыв обновлен: {}", newReview);
-        eventService.logEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.UPDATE);
+        eventService.addEvent(newReview.getUserId(), newReview.getReviewId(), EventType.REVIEW, Operation.UPDATE);
         return ReviewMapper.mapToReviewDto(newReview);
     }
 
@@ -92,7 +92,7 @@ public class ReviewService {
         log.info("Запрос на удаление отзыва с id: {}", reviewId);
         Review current = getReview(reviewId);
         reviewStorage.delete(current.getReviewId());
-        eventService.logEvent(current.getUserId(), current.getReviewId(), EventType.REVIEW, Operation.REMOVE);
+        eventService.addEvent(current.getUserId(), current.getReviewId(), EventType.REVIEW, Operation.REMOVE);
     }
 
     public ReviewDto addReviewLike(Long reviewId, Long userId) {

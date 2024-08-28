@@ -3,11 +3,11 @@ package ru.yandex.practicum.filmorate.storage;
 import java.util.Collection;
 import java.util.List;
 
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.in_memory.InMemoryFilmStorage;
 
 /**
  * Interface for managing {@link Film} entities in the storage system. Extends the {@link Storage}

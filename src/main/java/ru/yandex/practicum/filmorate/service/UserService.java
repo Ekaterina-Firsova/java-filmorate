@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.EventDto;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.EventType;
@@ -112,7 +112,7 @@ public class UserService implements CrudService<UserDto> {
     log.debug("User with id {} added successfully a friend with id {}",
         userId, newFriendId);
 
-    eventService.logEvent(userId, newFriendId, EventType.FRIEND, Operation.ADD);
+    eventService.addEvent(userId, newFriendId, EventType.FRIEND, Operation.ADD);
 
     return UserMapper.mapToUserDto(user);
   }
@@ -149,7 +149,7 @@ public class UserService implements CrudService<UserDto> {
     log.debug("User with id {} removed a friend with id {} successfully",
         userId, friendToRemoveId);
 
-    eventService.logEvent(userId, friendToRemoveId, EventType.FRIEND, Operation.REMOVE);
+    eventService.addEvent(userId, friendToRemoveId, EventType.FRIEND, Operation.REMOVE);
 
     return UserMapper.mapToUserDto(getUserByIdOrThrow(userId));
   }

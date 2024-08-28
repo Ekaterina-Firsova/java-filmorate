@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.storage;
 
 import java.util.List;
 
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dao.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.in_memory.InMemoryUserStorage;
 
 /**
  * UserStorage interface for managing user data in the storage system. This interface extends the

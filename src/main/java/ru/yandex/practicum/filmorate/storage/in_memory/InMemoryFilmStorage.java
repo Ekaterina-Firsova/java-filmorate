@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.inMemory;
+package ru.yandex.practicum.filmorate.storage.in_memory;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;

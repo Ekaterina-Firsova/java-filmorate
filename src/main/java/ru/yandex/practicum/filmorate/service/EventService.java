@@ -21,7 +21,7 @@ import ru.yandex.practicum.filmorate.storage.EventStorage;
  * It provides methods:
  * <ul>
  *   <li>{@link #getFeed(Long)}: Retrieves the event feed for a specified user.</li>
- *   <li>{@link #logEvent(Long, Long, EventType, Operation)}: Logs a new event to the event storage.</li>
+ *   <li>{@link #addEvent(Long, Long, EventType, Operation)}: Logs a new event to the event storage.</li>
  * </ul>
  *
  * @see Event
@@ -40,8 +40,8 @@ public class EventService {
     return eventStorage.findUserEvents(userId).stream().map(EventMapper::mapToEventDto).toList();
   }
 
-  public void logEvent(final Long userId, final Long entityId, EventType type,
-      Operation operation) {
+  public void addEvent(final Long userId, final Long entityId, EventType type,
+                       Operation operation) {
     final Event event = Event.builder()
         .timestamp(Instant.now().toEpochMilli())
         .userId(userId)

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class ValidByValidator implements ConstraintValidator<ValidBy, String> {
 
-  private List<String> validByOptions; // {title, director}
+  private List<String> validByOptions;
 
   /**
    * Initializes the validator with the valid options provided in the {@link ValidBy} annotation.

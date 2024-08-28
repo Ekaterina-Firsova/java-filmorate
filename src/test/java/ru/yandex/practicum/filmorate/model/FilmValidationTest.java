@@ -119,29 +119,28 @@ class FilmValidationTest {
   private static Stream<Arguments> provideInvalidFilmInstances() {
     final List<String> testNames = List.of(
         "All fields are null",
-        "Name is empty, ReleaseDate - in future, Duration - zero",
-        "Name is Blank, Description - 201 characters, ReleaseDate - before MinDate, Duration - negative number");
+        "Name is empty, ReleaseDate - before MinDate, Duration - zero",
+        "Name is Blank, Description - 201 characters, Duration - negative number");
     final List<List<String>> expectedProperties = List.of(
         new ArrayList<>(Arrays.asList("name", "releaseDate", "duration", "mpa")),
         new ArrayList<>(Arrays.asList("duration", "name", "releaseDate")),
-        new ArrayList<>(Arrays.asList("description", "duration", "name", "releaseDate"))
+        new ArrayList<>(Arrays.asList("description", "duration", "name"))
     );
     final List<List<String>> expectedMessages = List.of(
         new ArrayList<>(
             Arrays.asList("Name should not be empty.", "ReleaseDate should not be null.","Duration should not be null.","MPA rate should not be null.")),
         new ArrayList<>(
-            Arrays.asList("Name should not be empty.", "Release date should not be in future.",
+            Arrays.asList("Name should not be empty.", "Release date should not be before 1895-12-28",
                 "Duration must be a positive number.")),
         new ArrayList<>(Arrays.asList("Name should not be empty.",
             "Description should not exceed 200 characters.",
-            "Release date should not be before 1895-12-28",
             "Duration must be a positive number.")));
     final List<Film> filmsToValidate = List.of(
         Film.builder().build(),
         Film.builder().name("")
-            .releaseDate(LocalDate.now().plusDays(1)).duration(0L).mpa(new MpaRating(1L,"G")).build(),
+            .releaseDate(MIN_DATE.minusDays(1)).duration(0L).mpa(new MpaRating(1L,"G")).build(),
         Film.builder().name("  ").description(generateStringOfLength(201))
-            .releaseDate(MIN_DATE.minusDays(1)).duration(-1L).mpa(new MpaRating(1L,"G")).build());
+            .releaseDate(MIN_DATE.plusDays(1)).duration(-1L).mpa(new MpaRating(1L,"G")).build());
 
     return Stream.of(
         Arguments.of(testNames.get(0),

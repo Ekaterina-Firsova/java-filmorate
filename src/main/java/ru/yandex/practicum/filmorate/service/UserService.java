@@ -4,20 +4,32 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.EventDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 /**
  * A service class that handles user-related operations and interactions.
  * <p>
- * The service relies on an underlying storage mechanism provided by {@link UserStorage}.
+ * The service relies on an underlying storage mechanism provided by {@link UserStorage} and manages
+ * user-related actions such as saving, updating, and retrieving users. It also handles user
+ * relationships, like adding or removing friends, and logs these events using
+ * {@link EventService}.
  * <p>
  * It provides methods:
  * <ul>
@@ -29,21 +41,33 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
  * <li>{@link #getUserFriends(Long)}: Retrieves a list of a user's friends.</li>
  * <li>{@link #getMutualFriends(Long, Long)}: Retrieves a list of mutual friends between two users.</li>
  * <li>{@link #removeFriend(Long, Long)}: Removes a friend from the user's friend list.</li>
+ * <li>{@link #removeById(Long)}: Removes a user by their ID.</li>
+ * <li>{@link #getFeed(Long)}: Retrieves a list of events related to the user.</li>
+ * <li>{@link #getUserRecommendations(long)}: Retrieves recommendations for a user based on their preferences and interactions.</li>
+ * <li>{@link #validateUserId(Long)}: validated if user with given id exists in the DB, throws exception if not.</li>
  * </ul>
  *
  * @see User
  * @see UserDto
  * @see UserStorage
+ * @see FilmStorage
+ * @see EventService
  */
 @Service
 @Slf4j
 public class UserService implements CrudService<UserDto> {
 
   private final UserStorage userStorage;
+  private final FilmStorage filmStorage;
+  private final EventService eventService;
 
   @Autowired
-  public UserService(@Qualifier("userDbStorage") final UserStorage userStorage) {
+  public UserService(@Qualifier("userDbStorage") final UserStorage userStorage,
+      @Qualifier("filmDbStorage") final FilmStorage filmStorage,
+      final EventService eventService) {
     this.userStorage = userStorage;
+    this.filmStorage = filmStorage;
+    this.eventService = eventService;
   }
 
   @Override
@@ -85,6 +109,11 @@ public class UserService implements CrudService<UserDto> {
       throw new IllegalArgumentException("User cannot be friends with themselves.");
     }
     final User user = userStorage.addFriend(userId, newFriendId);
+    log.debug("User with id {} added successfully a friend with id {}",
+        userId, newFriendId);
+
+    eventService.logEvent(userId, newFriendId, EventType.FRIEND, Operation.ADD);
+
     return UserMapper.mapToUserDto(user);
   }
 
@@ -115,8 +144,26 @@ public class UserService implements CrudService<UserDto> {
         friendToRemoveId);
     validateUserId(userId);
     validateUserId(friendToRemoveId);
+
     userStorage.removeFriend(userId, friendToRemoveId);
+    log.debug("User with id {} removed a friend with id {} successfully",
+        userId, friendToRemoveId);
+
+    eventService.logEvent(userId, friendToRemoveId, EventType.FRIEND, Operation.REMOVE);
+
     return UserMapper.mapToUserDto(getUserByIdOrThrow(userId));
+  }
+
+  public void removeById(final Long userId) {
+    log.debug("Deleting user with ID {} ", userId);
+    validateUserId(userId);
+    userStorage.delete(userId);
+  }
+
+  public List<EventDto> getFeed(final Long userId) {
+    log.debug("Inside getFeed for user with ID {} to fetch event feed ", userId);
+    validateUserId(userId);
+    return eventService.getFeed(userId);
   }
 
   private User getUserByIdOrThrow(final Long id) {
@@ -125,7 +172,7 @@ public class UserService implements CrudService<UserDto> {
         .orElseThrow(() -> new NotFoundException("User with ID = " + id + " not found."));
   }
 
-  private void validateUserId(final Long id) {
+  public void validateUserId(final Long id) {
     log.debug("Validating user id {} is not null and exist in DB", id);
     if (id == null || !userStorage.isExist(id)) {
       log.warn("User with ID = {} not found in storage.", id);
@@ -139,6 +186,19 @@ public class UserService implements CrudService<UserDto> {
       user.setName(user.getLogin());
       log.debug("Property name was assigned with Login property value: {}", user.getName());
     }
+  }
+
+  public Collection<FilmDto> getUserRecommendations(final long userId) {
+    log.debug("Getting recommendations films for user with ID = {}", userId);
+    validateUserId(userId);
+    Long similarUserId = userStorage.getSimilarUser(userId);
+    if (similarUserId == null) {
+      return List.of();
+    }
+    Collection<Film> films = filmStorage.getRecommendedFilms(userId, similarUserId);
+    return films.stream()
+        .map(FilmMapper::mapToFilmDto)
+        .collect(Collectors.toList());
   }
 
 }

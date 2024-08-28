@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.util.Collection;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.dto.EventDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -126,4 +130,53 @@ public class UserController {
     return userService.removeFriend(id, friendId);
   }
 
+  /**
+   * Handles DELETE requests to remove a user by their ID.
+   *
+   * @param id The ID of the user to be removed.
+   */
+  @DeleteMapping("/{id}")
+  public void deleteById(@PathVariable final Long id) {
+    log.info("Received request DELETE user/{}", id);
+    userService.removeById(id);
+  }
+
+  /**
+   * Handles GET requests to retrieve a user by their ID.
+   *
+   * @param id The ID of the user to be retrieved.
+   * @return The user with the specified ID.
+   */
+  @GetMapping("/{id}")
+  public UserDto getUserById(@PathVariable final long id) {
+    log.info("Received request GET user/{}", id);
+    return userService.getById(id);
+  }
+
+  /**
+   * Handles GET requests to retrieve recommendations for a user based on their preferences and
+   * interactions.
+   *
+   * @param id The ID of the user whose recommendations are to be retrieved.
+   * @return A collection of recommended films for the user.
+   */
+  @GetMapping("/{id}/recommendations")
+  public Collection<FilmDto> getUserRecommendations(@PathVariable final long id) {
+    log.info("Received request GET user/{}/recommendations", id);
+    return userService.getUserRecommendations(id);
+  }
+
+
+  /**
+   * Handles GET requests to retrieve the event feed for a user.
+   *
+   * @param id the ID of the user whose feed is to be retrieved, must be positive
+   * @return a list of events associated with the user
+   */
+
+  @GetMapping("/{id}/feed")
+  public List<EventDto> getFeed(@PathVariable("id") @NotNull @Positive final Long id) {
+    log.info("Receiver request GET users/{}/feed", id);
+    return userService.getFeed(id);
+  }
 }

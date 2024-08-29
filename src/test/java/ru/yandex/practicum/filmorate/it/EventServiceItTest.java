@@ -18,11 +18,11 @@ import ru.yandex.practicum.filmorate.dto.ReviewDto;
 import ru.yandex.practicum.filmorate.dto.ReviewRequest;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
-import ru.yandex.practicum.filmorate.service.DirectorService;
-import ru.yandex.practicum.filmorate.service.EventService;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.ReviewService;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.DirectorServiceImpl;
+import ru.yandex.practicum.filmorate.service.EventServiceImpl;
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.service.ReviewServiceImpl;
+import ru.yandex.practicum.filmorate.service.UserServiceImpl;
 import ru.yandex.practicum.filmorate.storage.dao.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.EventDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
@@ -42,19 +42,20 @@ import ru.yandex.practicum.filmorate.storage.rowmappers.UserRowMapper;
 @AutoConfigureTestDatabase
 @ActiveProfiles("test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({FilmService.class, FilmDbStorage.class, FilmRowMapper.class,
-    UserService.class, UserDbStorage.class, UserRowMapper.class,
-    EventService.class, EventDbStorage.class, EventRowMapper.class,
-    GenreDbStorage.class, GenreRowMapper.class, MpaRatingDbStorage.class, MpaRatingRowMapper.class,
-    ReviewService.class, ReviewDbStorage.class, ReviewRowMapper.class,
-    DirectorService.class, DirectorDbStorage.class, DirectorRowMapper.class})
+@Import({FilmServiceImpl.class, FilmServiceImpl.class, FilmDbStorage.class, FilmRowMapper.class,
+    UserServiceImpl.class, UserDbStorage.class, UserRowMapper.class,
+    EventServiceImpl.class, EventDbStorage.class, EventRowMapper.class,
+    GenreDbStorage.class, GenreRowMapper.class,
+    MpaRatingDbStorage.class, MpaRatingRowMapper.class,
+    ReviewServiceImpl.class, ReviewDbStorage.class, ReviewRowMapper.class,
+    DirectorServiceImpl.class, DirectorDbStorage.class, DirectorRowMapper.class})
 @Transactional
 public class EventServiceItTest {
 
-  private final EventService eventService;
-  private final UserService userService;
-  private final FilmService filmService;
-  private final ReviewService reviewService;
+  private final EventServiceImpl eventService;
+  private final UserServiceImpl userService;
+  private final FilmServiceImpl filmService;
+  private final ReviewServiceImpl reviewService;
 
   /**
    * <ol>
@@ -91,8 +92,8 @@ public class EventServiceItTest {
     final Long userId = 1L;
     final Long friendId = 2L;
     final Long filmId = 1L;
-    ReviewRequest review = TestDataBuilder.buildReview(userId,filmId);
-    ReviewRequest reviewToUpdate = TestDataBuilder.buildUpdateReview(userId,filmId);
+    ReviewRequest review = TestDataBuilder.buildReview(userId, filmId);
+    ReviewRequest reviewToUpdate = TestDataBuilder.buildUpdateReview(userId, filmId);
 
     userService.addFriend(userId, friendId); //0
     userService.removeFriend(userId, friendId); //1
@@ -108,7 +109,6 @@ public class EventServiceItTest {
     assertThat(actualFeed)
         .isNotEmpty()
         .hasSize(7);
-
 
     assertThat(actualFeed)
         .allSatisfy(event -> assertThat(event.getTimestamp())
@@ -152,13 +152,13 @@ public class EventServiceItTest {
         .extracting(EventDto::getEventType,
             EventDto::getOperation,
             EventDto::getEntityId)
-        .containsExactly(EventType.REVIEW, Operation.UPDATE,reviewId);
+        .containsExactly(EventType.REVIEW, Operation.UPDATE, reviewId);
 
     assertThat(actualFeed.get(6))
         .extracting(EventDto::getEventType,
             EventDto::getOperation,
             EventDto::getEntityId)
-        .containsExactly(EventType.REVIEW, Operation.REMOVE,reviewId);
+        .containsExactly(EventType.REVIEW, Operation.REMOVE, reviewId);
   }
 
   @Test

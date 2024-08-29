@@ -11,6 +11,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 public class FilmMapper {
 
   public Film mapToFilm(final FilmDto filmDto) {
+    if (filmDto == null) {
+      return null;
+    }
     final Film film = Film.builder()
         .id(filmDto.getId())
         .name(filmDto.getName())
@@ -26,6 +29,9 @@ public class FilmMapper {
   }
 
   public FilmDto mapToFilmDto(final Film film) {
+    if (film == null) {
+      return null;
+    }
     final FilmDto filmDto = FilmDto.builder()
         .id(film.getId())
         .name(film.getName())

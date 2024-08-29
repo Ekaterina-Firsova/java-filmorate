@@ -8,18 +8,22 @@ import ru.yandex.practicum.filmorate.model.Director;
 public class DirectorMapper {
 
   public DirectorDto mapToDirectorDto(final Director director) {
+    if (director == null) {
+      return null;
+    }
     return DirectorDto.builder()
-        .id(director.getId())
-        .name(director.getName())
-        .build();
+            .id(director.getId())
+            .name(director.getName())
+            .build();
   }
 
   public Director mapToDirector(final DirectorDto directorDto) {
-    return directorDto != null ?
-        Director.builder()
-            .id(directorDto.getId())
-            .name(directorDto.getName())
-            .build() :
-        null;
+    if (directorDto == null) {
+      return null;
+    }
+    return Director.builder()
+        .id(directorDto.getId())
+        .name(directorDto.getName())
+        .build();
   }
 }

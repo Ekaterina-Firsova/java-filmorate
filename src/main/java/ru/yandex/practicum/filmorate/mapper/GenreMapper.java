@@ -11,10 +11,13 @@ import ru.yandex.practicum.filmorate.model.Genre;
 public class GenreMapper {
 
   public GenreDto mapToGenreDto(final Genre genre) {
+    if (genre == null) {
+      return null;
+    }
     return GenreDto.builder()
-        .id(genre.getId())
-        .name(genre.getName())
-        .build();
+            .id(genre.getId())
+            .name(genre.getName())
+            .build();
   }
 
 }

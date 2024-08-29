@@ -11,13 +11,16 @@ import ru.yandex.practicum.filmorate.model.Event;
 public class EventMapper {
 
   public EventDto mapToEventDto(final Event event) {
+    if (event == null) {
+      return null;
+    }
     return EventDto.builder()
-        .eventId(event.getEventId())
-        .timestamp(event.getTimestamp())
-        .userId(event.getUserId())
-        .eventType(event.getEventType())
-        .operation(event.getOperation())
-        .entityId(event.getEntityId())
-        .build();
+            .eventId(event.getEventId())
+            .timestamp(event.getTimestamp())
+            .userId(event.getUserId())
+            .eventType(event.getEventType())
+            .operation(event.getOperation())
+            .entityId(event.getEntityId())
+            .build();
   }
 }

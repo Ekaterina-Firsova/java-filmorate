@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface DirectorStorage extends Storage<Director> {
 
     Optional<Director> findById(final Long id);
+
     Collection<Director> findAll();
 }

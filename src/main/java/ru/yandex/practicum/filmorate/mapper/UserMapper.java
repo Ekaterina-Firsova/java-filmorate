@@ -16,16 +16,22 @@ import ru.yandex.practicum.filmorate.model.User;
 public class UserMapper {
 
   public User mapToUser(final UserDto userDto) {
+    if (userDto == null) {
+      return null;
+    }
     return User.builder()
-        .login(userDto.getLogin())
-        .name(userDto.getName())
-        .email(userDto.getEmail())
-        .birthday(userDto.getBirthday())
-        .id(userDto.getId())
-        .build();
+            .login(userDto.getLogin())
+            .name(userDto.getName())
+            .email(userDto.getEmail())
+            .birthday(userDto.getBirthday())
+            .id(userDto.getId())
+            .build();
   }
 
   public UserDto mapToUserDto(final User user) {
+    if (user == null) {
+      return null;
+    }
     final UserDto userDto = UserDto.builder()
         .id(user.getId())
         .email(user.getEmail())

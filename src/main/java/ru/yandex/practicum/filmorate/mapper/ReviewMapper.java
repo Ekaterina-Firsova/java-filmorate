@@ -10,6 +10,9 @@ import ru.yandex.practicum.filmorate.model.Review;
 @UtilityClass
 public class ReviewMapper {
     public Review mapToReview(ReviewRequest request) {
+        if (request == null) {
+            return null;
+        }
         log.info("ReviewRequest в маппер: {}", request);
         Review review = Review.builder()
                 .reviewId(request.getReviewId())
@@ -23,6 +26,9 @@ public class ReviewMapper {
     }
 
     public ReviewDto mapToReviewDto(Review review) {
+        if (review == null) {
+            return null;
+        }
         log.info("Review в маппер: {}", review);
         ReviewDto reviewDto = ReviewDto.builder()
                 .reviewId(review.getReviewId())

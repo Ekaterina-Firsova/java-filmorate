@@ -11,9 +11,12 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 public class MpaRatingMapper {
 
   public MpaRatingDto mapToMpaRatingDto(final MpaRating mpa) {
+    if (mpa == null) {
+      return null;
+    }
     return MpaRatingDto.builder()
-        .id(mpa.getId())
-        .name(mpa.getName())
-        .build();
+            .id(mpa.getId())
+            .name(mpa.getName())
+            .build();
   }
 }

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
@@ -33,6 +34,7 @@ public class FilmRowMapper implements RowMapper<Film> {
 
     mapGenres(rs, film);
     mapLikes(rs, film);
+    mapDirectors(rs, film);
 
     return film;
   }
@@ -56,4 +58,20 @@ public class FilmRowMapper implements RowMapper<Film> {
     }
   }
 
+  private void mapDirectors(ResultSet rs, Film film) throws SQLException {
+    final List<Long> directorIds = RowMapperHelper.extractListLong(rs, "director_id");
+    final List<String> directorNames = RowMapperHelper.extractListString(rs, "director_name");
+
+    if (directorIds.size() != directorNames.size()) {
+      throw new RuntimeException(
+              "Error occur during FilmRowMapping - the number of director ids and names differ.");
+    }
+    for (int i = 0; i < directorIds.size(); i++) {
+      film.getDirectors().add(
+              Director.builder()
+              .id(directorIds.get(i))
+              .name(directorNames.get(i))
+              .build());
+    }
+  }
 }

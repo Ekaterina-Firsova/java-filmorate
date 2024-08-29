@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.inMemory;
+package ru.yandex.practicum.filmorate.storage.in_memory;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -9,8 +9,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.DuplicatedDataException;
+import ru.yandex.practicum.filmorate.exception.DuplicatedDataException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 @Component
@@ -58,7 +59,7 @@ public class InMemoryFilmStorage implements FilmStorage {
   }
 
   @Override
-  public List<Film> getTopFilms(int count) {
+  public List<Film> getTopFilms(int count, Long genreId, Integer year) {
     log.debug("Inside the getTopFilms to get top {} films", count);
     return films.values().stream()
         .sorted(Comparator.comparing((Film film) -> film.getLikes().size()).reversed())
@@ -81,6 +82,26 @@ public class InMemoryFilmStorage implements FilmStorage {
     final Film film = films.get(filmId);
     film.getLikes().remove(userId);
     return film;
+  }
+
+  @Override
+  public List<Film> getDirectorFilms(Long id, String sortBy) {
+    return null;
+  }
+
+  @Override
+  public Collection<Film> getRecommendedFilms(Long userId, Long similarUserId) {
+    return List.of();
+  }
+
+  @Override
+  public Collection<Film> getCommonFilms(Long userId, Long friendId) {
+    return List.of();
+  }
+
+  @Override
+  public List<Film> searchBy(String query, List<SearchCriteria> searchCriterias) {
+    return List.of();
   }
 
   /**

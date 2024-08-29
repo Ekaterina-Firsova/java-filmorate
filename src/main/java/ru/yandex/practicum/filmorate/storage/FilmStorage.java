@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import java.util.Collection;
 import java.util.List;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
+
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchCriteria;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.inMemory.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.in_memory.InMemoryFilmStorage;
 
 /**
  * Interface for managing {@link Film} entities in the storage system. Extends the {@link Storage}
@@ -22,7 +25,7 @@ public interface FilmStorage extends Storage<Film> {
    * @param count the maximum number of top films to retrieve.
    * @return a list of {@link Film} representing the top-rated films.
    */
-  List<Film> getTopFilms(int count);
+  List<Film> getTopFilms(int count, Long genreId, Integer year);
 
   /**
    * Adds a like from a user to a specified film.
@@ -44,4 +47,40 @@ public interface FilmStorage extends Storage<Film> {
    */
   Film removeLike(Long filmId, Long userId);
 
+  /**
+   * Retrieves a list of films directed by a specific director, sorted by the specified criteria.
+   *
+   * @param id     the ID of the director whose films are to be retrieved;
+   * @param sortBy the sorting criteria; can be either "likes" to sort by the number of likes or
+   *               "year" to sort by release year
+   * @return a list of {@link Film} objects by the specified director, sorted according to
+   * the {@code sortBy} parameter
+   */
+  List<Film> getDirectorFilms(Long id, String sortBy);
+
+  /**
+   * Retrieves a list of films recommended to a user based on their likes and friends' likes.
+   *
+   * @param userId the ID of the user.
+   * @param similarUserId the ID of the user's friend.
+   */
+  Collection<Film> getRecommendedFilms(Long userId, Long similarUserId);
+
+  /**
+   * Retrieves a list of films that both a user and a friend have liked.
+   *
+   * @param userId the ID of the user.
+   * @param friendId the ID of the user's friend.
+   */
+  Collection<Film> getCommonFilms(Long userId, Long friendId);
+
+
+  /**
+   * Searches for films based on the specified query and search criteria.
+   *
+   * @param query           the search query string used to filter films;
+   * @param searchCriterias a list of {@link SearchCriteria} defining the criteria to search by;
+   * @return a list of {@link Film} objects that match the search criteria
+   */
+  List<Film> searchBy(String query, List<SearchCriteria> searchCriterias);
 }

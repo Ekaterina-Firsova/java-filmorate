@@ -11,6 +11,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 public class FilmMapper {
 
   public Film mapToFilm(final FilmDto filmDto) {
+    if (filmDto == null) {
+      return null;
+    }
     final Film film = Film.builder()
         .id(filmDto.getId())
         .name(filmDto.getName())
@@ -21,10 +24,14 @@ public class FilmMapper {
         .build();
     filmDto.getGenres().forEach(genreId -> film.getGenres().add(genreId));
     filmDto.getLikes().forEach(userId -> film.getLikes().add(userId));
+    filmDto.getDirectors().forEach(director -> film.getDirectors().add(director));
     return film;
   }
 
   public FilmDto mapToFilmDto(final Film film) {
+    if (film == null) {
+      return null;
+    }
     final FilmDto filmDto = FilmDto.builder()
         .id(film.getId())
         .name(film.getName())
@@ -35,7 +42,7 @@ public class FilmMapper {
         .build();
     film.getGenres().forEach(genreId -> filmDto.getGenres().add(genreId));
     film.getLikes().forEach(userId -> filmDto.getLikes().add(userId));
+    film.getDirectors().forEach(director -> filmDto.getDirectors().add(director));
     return filmDto;
-
   }
 }

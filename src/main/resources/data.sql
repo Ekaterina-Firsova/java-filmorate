@@ -16,3 +16,17 @@ VALUES
   ('Документальный'),
   ('Боевик')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO event_type (type)
+VALUES
+  ('LIKE'),
+  ('REVIEW'),
+  ('FRIEND')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO operation (name)
+VALUES
+  ('REMOVE'),
+  ('ADD'),
+  ('UPDATE')
+ON CONFLICT DO NOTHING;

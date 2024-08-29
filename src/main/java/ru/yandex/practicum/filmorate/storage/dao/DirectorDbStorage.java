@@ -9,14 +9,14 @@ import ru.yandex.practicum.filmorate.exception.InvalidDataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.BaseRepository;
-import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.util.Collection;
 import java.util.Optional;
 
 @Repository
 @Slf4j
-public class DirectorDbStorage extends BaseRepository<Director> implements Storage<Director> {
+public class DirectorDbStorage extends BaseRepository<Director> implements DirectorStorage {
 
     private static final String SELECT_ALL_QUERY = "SELECT * FROM director GROUP BY id";
     private static final String SELECT_BY_ID_QUERY = "SELECT * FROM director WHERE id = ?";

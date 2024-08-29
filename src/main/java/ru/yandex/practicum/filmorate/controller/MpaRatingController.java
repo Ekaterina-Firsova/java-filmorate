@@ -34,7 +34,9 @@ public class MpaRatingController {
   @GetMapping
   public List<MpaRatingDto> getAllMpaRatings() {
     log.info("Received GET /mpa.");
-    return mpaRatingService.getAll();
+    return mpaRatingService.getAll()
+        .stream()
+        .toList();
   }
 
   /**

@@ -1,56 +1,31 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.time.Instant;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.EventDto;
-import ru.yandex.practicum.filmorate.mapper.EventMapper;
-import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
-import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 /**
- * A service class that handles event-related operations and interactions.
+ * A service interface for managing user events in the application.
  * <p>
- * This service is responsible for managing user-generated events such as adding friends, liking
- * films, and other user activities that need to be logged and retrieved as part of the event feed.
- * <p>
- * It provides methods:
+ * This service provides methods for retrieving a user's event feed and adding new events related to
+ * user actions (such as likes, reviews, or friendships).
+ * </p>
+ *
  * <ul>
- *   <li>{@link #getFeed(Long)}: Retrieves the event feed for a specified user.</li>
- *   <li>{@link #addEvent(Long, Long, EventType, Operation)}: Logs a new event to the event storage.</li>
+ *   <li>{@link #getFeed(Long)} - Retrieves the event feed for a specified user.</li>
+ *   <li>{@link #addEvent(Long, Long, EventType, Operation)} - Adds a new event to the storage,
+ *       representing a user action.</li>
  * </ul>
  *
- * @see Event
  * @see EventDto
- * @see EventStorage
+ * @see EventType
+ * @see Operation
  */
-@Service
-@Slf4j
-@RequiredArgsConstructor
-public class EventService {
+public interface EventService {
 
-  private final EventStorage eventStorage;
+  List<EventDto> getFeed(Long userId);
 
-  public List<EventDto> getFeed(final Long userId) {
-    log.debug("Inside getFeed for user with ID {} to fetch event feed ", userId);
-    return eventStorage.findUserEvents(userId).stream().map(EventMapper::mapToEventDto).toList();
-  }
-
-  public void addEvent(final Long userId, final Long entityId, EventType type,
-                       Operation operation) {
-    final Event event = Event.builder()
-        .timestamp(Instant.now().toEpochMilli())
-        .userId(userId)
-        .eventType(type)
-        .operation(operation)
-        .entityId(entityId)
-        .build();
-
-    eventStorage.addEvent(event);
-  }
+  void addEvent(Long userId, Long entityId, EventType type, Operation operation);
 
 }

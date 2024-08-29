@@ -1,13 +1,20 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.storage.dao.DirectorDbStorage;
 
-import java.util.Collection;
-import java.util.Optional;
-
+/**
+ * Storage interface for managing {@link Director} entities.
+ * <p>
+ * This interface extends the generic {@link Storage} interface to provide CRUD operations specific
+ * to {@link Director} entities.
+ * </p>
+ *
+ * @see Director
+ * @see Storage
+ * @see ReadOnlyStorage
+ * @see DirectorDbStorage
+ */
 public interface DirectorStorage extends Storage<Director> {
 
-    Optional<Director> findById(final Long id);
-
-    Collection<Director> findAll();
 }

@@ -34,7 +34,9 @@ public class GenreController {
   @GetMapping
   public List<GenreDto> getAllGenres() {
     log.info("Received GET /genres.");
-    return genreService.getAll();
+    return genreService.getAll()
+        .stream()
+        .toList();
   }
 
   /**

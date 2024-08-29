@@ -14,6 +14,17 @@ import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * Implementation of {@link DirectorStorage} for managing {@link Director} entities in the database.
+ * <p>
+ * This class provides methods to perform operations on director records, including saving, updating,
+ * retrieving, and deleting directors. It extends {@link BaseRepository} and utilizes Spring's
+ * {@link JdbcTemplate} for database interactions.
+ *
+ * @see DirectorStorage
+ * @see BaseRepository
+ * @see JdbcTemplate
+ */
 @Repository
 @Slf4j
 public class DirectorDbStorage extends BaseRepository<Director> implements DirectorStorage {
